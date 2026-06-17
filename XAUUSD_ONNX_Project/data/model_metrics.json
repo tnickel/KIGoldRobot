@@ -7,7 +7,7 @@
       "min_samples_leaf": 15,
       "class_weight": "balanced"
     },
-    "training_time_seconds": 0.4097940921783447
+    "training_time_seconds": 0.4082033634185791
   },
   "feature_importances": [
     {

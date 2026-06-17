@@ -378,32 +378,36 @@ class MLPipelineGUI:
             forest_frame.grid_columnconfigure(1, weight=1)
             forest_frame.grid_columnconfigure(2, weight=1)
             forest_frame.grid_columnconfigure(3, weight=1)
+            forest_frame.grid_columnconfigure(4, weight=1)
             
             # Details:
             # 1. Total trees
-            self.add_detail_box(forest_frame, 0, "Bäume gesamt (Trees)", str(details.get("n_estimators", 150)))
+            self.add_detail_box(forest_frame, 0, "Bäume (Trees)", str(details.get("n_estimators", 150)))
             # 2. Total nodes
-            self.add_detail_box(forest_frame, 1, "Knoten gesamt (Nodes)", f"{details.get('total_nodes', 0):,}")
-            # 3. Avg nodes
-            self.add_detail_box(forest_frame, 2, "Ø Knoten pro Baum", f"{details.get('avg_nodes_per_tree', 0.0):.1f}")
-            # 4. ONNX size
+            self.add_detail_box(forest_frame, 1, "Entscheidungsknoten", f"{details.get('total_nodes', 0):,}")
+            # 3. Avg depth
+            self.add_detail_box(forest_frame, 2, "Ø Baum-Tiefe", f"{details.get('avg_actual_depth', 0.0):.1f}")
+            # 4. Train time
+            train_sec = self.metrics.get("algorithm", {}).get("training_time_seconds", 0.0)
+            self.add_detail_box(forest_frame, 3, "Trainings-Dauer", f"{train_sec:.2f}s")
+            # 5. ONNX size
             onnx_kb = details.get("onnx_size_bytes", 0) / 1024.0
-            self.add_detail_box(forest_frame, 3, "ONNX Dateigröße", f"{onnx_kb:.1f} KB")
+            self.add_detail_box(forest_frame, 4, "ONNX Dateigröße", f"{onnx_kb:.1f} KB")
+
 
 
     def render_features_tab(self, frame):
-        """Displays list of 16 features mapping inside the ONNX model."""
-        lbl_title = tk.Label(frame, text="ONNX-Modell Eingangsfeatures (Eingabevektor: 16 Dimensionen)", bg=BG_DARK, fg=FG_LIGHT, font=("Segoe UI", 14, "bold"))
+        """Displays list of 16 features mapping inside the ONNX model, ranked by importance."""
+        lbl_title = tk.Label(frame, text="Feature-Bedeutung (Feature Importance Ranking)", bg=BG_DARK, fg=FG_LIGHT, font=("Segoe UI", 14, "bold"))
         lbl_title.pack(anchor="w", pady=(0, 15))
         
-        desc_label = tk.Label(frame, text="Diese 16 Features werden bei jeder neuen M30-Kerze live in MT5 kopiert, ATR-normalisiert und in die eingebettete model.onnx-Ressource eingespeist:", bg=BG_DARK, fg=FG_MUTED, wraplength=750, justify="left", font=("Segoe UI", 10))
+        desc_text = "Der Random Forest bewertet die Wichtigkeit jedes Features für die Vorhersage. Die Features sind hier nach ihrer Relevanz sortiert:"
+        desc_label = tk.Label(frame, text=desc_text, bg=BG_DARK, fg=FG_MUTED, wraplength=750, justify="left", font=("Segoe UI", 10))
         desc_label.pack(anchor="w", pady=(0, 15))
         
         # Grid frame for features list
         grid_frame = tk.Frame(frame, bg=BG_DARK)
         grid_frame.pack(fill="both", expand=True)
-        
-        features_list = self.metrics.get("features", [])
         
         feature_descriptions = {
             "atr": "Average True Range (14) - Gold Volatilität",
@@ -424,29 +428,58 @@ class MLPipelineGUI:
             "cos_day": "Zyklischer Wochentag (Cosinus-Komponente)"
         }
         
+        feat_imp = self.metrics.get("feature_importances", [])
+        
+        if not feat_imp:
+            # Fallback if no importances saved yet
+            features_list = self.metrics.get("features", [])
+            feat_imp = [{"name": f, "importance": 1.0 / len(features_list) if features_list else 0.0} for f in features_list]
+            
         # Draw 2 columns of 8 features each
-        half = (len(features_list) + 1) // 2
+        half = (len(feat_imp) + 1) // 2
         for col in range(2):
             col_frame = tk.Frame(grid_frame, bg=BG_DARK)
             col_frame.pack(side="left", fill="both", expand=True, padx=10)
             
             start = col * half
-            end = min(start + half, len(features_list))
+            end = min(start + half, len(feat_imp))
             
             for idx in range(start, end):
-                f_name = features_list[idx]
+                item = feat_imp[idx]
+                f_name = item["name"]
+                importance = item["importance"]
+                rank = idx + 1
+                
                 card = tk.Frame(col_frame, bg=BG_CARD, bd=0, highlightthickness=1, highlightbackground=BORDER_COLOR, pady=10, padx=15)
                 card.pack(fill="x", pady=5)
                 
-                lbl_num = tk.Label(card, text=f"INPUT [{idx:02d}]:", bg=BG_CARD, fg=COLOR_ACCENT, font=("Consolas", 9, "bold"))
-                lbl_num.pack(anchor="w")
+                # Header row: Rank and Name
+                header_f = tk.Frame(card, bg=BG_CARD)
+                header_f.pack(fill="x")
                 
-                lbl_n = tk.Label(card, text=f_name, bg=BG_CARD, fg=FG_LIGHT, font=("Consolas", 10, "bold"))
-                lbl_n.pack(anchor="w")
+                lbl_rank = tk.Label(header_f, text=f"#{rank:02d}", bg=BG_CARD, fg=COLOR_ACCENT, font=("Segoe UI", 10, "bold"))
+                lbl_rank.pack(side="left")
                 
+                lbl_n = tk.Label(header_f, text=f" {f_name}", bg=BG_CARD, fg=FG_LIGHT, font=("Consolas", 10, "bold"))
+                lbl_n.pack(side="left")
+                
+                lbl_imp_val = tk.Label(header_f, text=f"{importance*100:.2f}%", bg=BG_CARD, fg=COLOR_BLUE, font=("Segoe UI", 9, "bold"))
+                lbl_imp_val.pack(side="right")
+                
+                # Description
                 desc = feature_descriptions.get(f_name, "Gold Modell Feature")
-                lbl_d = tk.Label(card, text=desc, bg=BG_CARD, fg=FG_MUTED, font=("Segoe UI", 8))
-                lbl_d.pack(anchor="w", pady=(2, 0))
+                lbl_d = tk.Label(card, text=desc, bg=BG_CARD, fg=FG_MUTED, font=("Segoe UI", 8), justify="left", anchor="w")
+                lbl_d.pack(fill="x", pady=(2, 5))
+                
+                # Horizontal Bar representing importance
+                p_bar_bg = tk.Frame(card, bg=BORDER_COLOR, height=4)
+                p_bar_bg.pack(fill="x")
+                color = COLOR_GREEN if rank <= 3 else (COLOR_BLUE if rank <= 8 else FG_MUTED)
+                max_imp = feat_imp[0]["importance"] if feat_imp else 1.0
+                rel_width = int((importance / max_imp) * 200) if max_imp > 0 else 0
+                p_bar_fg = tk.Frame(p_bar_bg, bg=color, height=4, width=max(1, rel_width))
+                p_bar_fg.pack(side="left")
+
 
     def render_confusion_tab(self, frame):
         """Draws a custom heatmap visualization of the test confusion matrix."""
