@@ -30,6 +30,7 @@ input double   InpTakeProfitATRMultiplier = 3.0;       // Take Profit ATR Multip
 input double   InpCommissionPerLot        = 6.0;       // Round-turn commission per 1 Lot (in $)
 
 input group "--- Model Strategy Settings ---"
+input ENUM_TIMEFRAMES InpTimeFrame               = PERIOD_M15;     // Strategy Execution Timeframe
 input double   InpMinProbability          = 0.55;      // Minimum model confidence (0.50 to 1.00)
 input bool     InpCloseOnOppositeSignal   = true;      // Close active position on opposite signal
 
@@ -107,12 +108,12 @@ int OnInit()
    }
    
    // 5. Initialize Indicator Handles (aligned with Python feature definitions)
-   handle_atr    = iATR(Symbol(), PERIOD_H1, 14);
-   handle_rsi    = iRSI(Symbol(), PERIOD_H1, 14, PRICE_CLOSE);
-   handle_ema20  = iMA(Symbol(), PERIOD_H1, 20, 0, MODE_EMA, PRICE_CLOSE);
-   handle_ema50  = iMA(Symbol(), PERIOD_H1, 50, 0, MODE_EMA, PRICE_CLOSE);
-   handle_sma200 = iMA(Symbol(), PERIOD_H1, 200, 0, MODE_SMA, PRICE_CLOSE);
-   handle_macd   = iMACD(Symbol(), PERIOD_H1, 12, 26, 9, PRICE_CLOSE);
+   handle_atr    = iATR(Symbol(), InpTimeFrame, 14);
+   handle_rsi    = iRSI(Symbol(), InpTimeFrame, 14, PRICE_CLOSE);
+   handle_ema20  = iMA(Symbol(), InpTimeFrame, 20, 0, MODE_EMA, PRICE_CLOSE);
+   handle_ema50  = iMA(Symbol(), InpTimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE);
+   handle_sma200 = iMA(Symbol(), InpTimeFrame, 200, 0, MODE_SMA, PRICE_CLOSE);
+   handle_macd   = iMACD(Symbol(), InpTimeFrame, 12, 26, 9, PRICE_CLOSE);
    
    if(handle_atr == INVALID_HANDLE || handle_rsi == INVALID_HANDLE ||
       handle_ema20 == INVALID_HANDLE || handle_ema50 == INVALID_HANDLE ||
@@ -157,12 +158,12 @@ void OnDeinit(const int reason)
 }
 
 //+------------------------------------------------------------------+
-//| Check if a new H1 bar has opened                                 |
+//| Check if a new bar has opened                                    |
 //+------------------------------------------------------------------+
 bool IsNewBar()
 {
    static datetime last_bar_time = 0;
-   datetime current_bar_time = iTime(Symbol(), PERIOD_H1, 0);
+   datetime current_bar_time = iTime(Symbol(), InpTimeFrame, 0);
    
    if(current_bar_time == 0)
       return false;
@@ -219,7 +220,7 @@ void OnTick()
    
    // 2. Fetch completed bar price and indicators (Index 1)
    MqlRates rates[];
-   if(CopyRates(Symbol(), PERIOD_H1, 1, 20, rates) < 20)
+   if(CopyRates(Symbol(), InpTimeFrame, 1, 20, rates) < 20)
    {
       Print("Failed to copy bar data. Not enough bars loaded.");
       return;

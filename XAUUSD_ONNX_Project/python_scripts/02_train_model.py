@@ -27,7 +27,7 @@ from skl2onnx.common.data_types import FloatTensorType
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "data", "xauusd_h1_features.csv")
+DATA_PATH = os.path.join(BASE_DIR, "data", "xauusd_features.csv")
 MODEL_OUT_PATH = os.path.join(BASE_DIR, "mql5_ea", "model.onnx")
 
 # Features to use for training

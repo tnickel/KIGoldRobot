@@ -12,16 +12,26 @@ Features are normalized by ATR to make them scale-invariant across different pri
 
 import os
 import sys
+import argparse
 from datetime import datetime, timezone, timedelta
 import pandas as pd
 import numpy as np
 import MetaTrader5 as mt5
 
-# Configuration Parameters
+# Configuration Parameters & Timeframe Mapping
 SYMBOL = "XAUUSD"
-TIMEFRAME = mt5.TIMEFRAME_H1
 YEARS_OF_DATA = 5
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+
+TIMEFRAME_MAP = {
+    "M1": mt5.TIMEFRAME_M1,
+    "M5": mt5.TIMEFRAME_M5,
+    "M15": mt5.TIMEFRAME_M15,
+    "M30": mt5.TIMEFRAME_M30,
+    "H1": mt5.TIMEFRAME_H1,
+    "H4": mt5.TIMEFRAME_H4,
+    "D1": mt5.TIMEFRAME_D1
+}
 
 # Technical Indicator Parameters
 RSI_PERIOD = 14
@@ -35,7 +45,11 @@ SMA_SLOW = 200
 # Target = 1 if Close(t+1) - Close(t) > (ATR(t) * ATR_THRESHOLD_MULTIPLE)
 # Target = -1 if Close(t+1) - Close(t) < -(ATR(t) * ATR_THRESHOLD_MULTIPLE)
 # Target = 0 otherwise
-ATR_THRESHOLD_MULTIPLE = 0.5
+ATR_THRESHOLD_MULTIPLE = 0.25
+
+# Global variables initialized in main
+TIMEFRAME = mt5.TIMEFRAME_M15
+TIMEFRAME_STR = "M15"
 
 
 def initialize_mt5():
@@ -191,6 +205,21 @@ def engineer_features(df):
 
 
 def main():
+    global TIMEFRAME, TIMEFRAME_STR, YEARS_OF_DATA
+    
+    parser = argparse.ArgumentParser(description="Fetch historical data from MT5 and engineer features.")
+    parser.add_argument("--timeframe", type=str, default="M15", help="Timeframe (e.g. M15, M30, H1)")
+    parser.add_argument("--years", type=int, default=5, help="Number of years of data to fetch")
+    args = parser.parse_args()
+    
+    if args.timeframe not in TIMEFRAME_MAP:
+        print(f"Error: Unsupported timeframe {args.timeframe}. Choose from: {list(TIMEFRAME_MAP.keys())}")
+        sys.exit(1)
+        
+    TIMEFRAME_STR = args.timeframe
+    TIMEFRAME = TIMEFRAME_MAP[TIMEFRAME_STR]
+    YEARS_OF_DATA = args.years
+    
     # Setup directories
     os.makedirs(DATA_DIR, exist_ok=True)
     
@@ -218,7 +247,7 @@ def main():
             print(f"  {label:10s}: {count:6d} ({percentage:.2f}%)")
             
         # Save to file
-        output_path = os.path.join(DATA_DIR, "xauusd_h1_features.csv")
+        output_path = os.path.join(DATA_DIR, "xauusd_features.csv")
         features_df.to_csv(output_path)
         print(f"\nSaved engineered dataset to: {output_path}")
         

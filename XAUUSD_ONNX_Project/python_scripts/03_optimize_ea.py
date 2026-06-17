@@ -41,7 +41,7 @@ MODEL_REAL_TICKS = 4
 OPTIMIZATION_GENETIC = 2
 OPTIMIZATION_DISABLED = 0
 
-def get_optimization_parameters():
+def get_optimization_parameters(tf_val=15):
     """
     Defines default values and search ranges for the XAUUSD ONNX Robot.
     Format: "Value||Start||Step||Stop||Y/N"
@@ -49,6 +49,9 @@ def get_optimization_parameters():
       - N means fixed (non-optimized)
     """
     return {
+        # Strategy Execution Timeframe
+        "InpTimeFrame": f"{tf_val}||0||0||0||N",
+        
         # Risk Settings
         "InpLotSize": "0.1||0||0||0||N",
         "InpUseDynamicRisk": "false||0||0||0||N",
@@ -60,7 +63,7 @@ def get_optimization_parameters():
         "InpTakeProfitATRMultiplier": "3.0||1.5||0.3||5.0||Y",
         
         # Model Execution Filters (Optimized range)
-        "InpMinProbability": "0.55||0.50||0.05||0.75||Y",
+        "InpMinProbability": "0.40||0.35||0.03||0.52||Y",
         "InpCloseOnOppositeSignal": "true||0||0||0||N",
         
         # Safety Settings
@@ -75,7 +78,7 @@ def write_set_file(params, filepath):
         for k, v in params.items():
             f.write(f"{k}={v}\n")
 
-def write_json_config(results_dir, from_date, to_date, model=MODEL_FAST, optimization=OPTIMIZATION_GENETIC):
+def write_json_config(results_dir, from_date, to_date, model=MODEL_FAST, optimization=OPTIMIZATION_GENETIC, period="M15"):
     """Generates the runner JSON config for the Java backtester CLI."""
     config = {
         "output_directory": results_dir,
@@ -95,7 +98,7 @@ def write_json_config(results_dir, from_date, to_date, model=MODEL_FAST, optimiz
                 "expert_name": "XAU_ONNX_Bot",
                 "expert_path": EX5_PATH,
                 "symbol": "XAUUSD",
-                "period": "H1",
+                "period": period,
                 "set_file_path": SET_FILE_PATH
             }
         ]
@@ -145,7 +148,7 @@ def calculate_fitness(profit, rf, trades, dd):
     else:
         penalty = 1.0
         
-    if profit <= 0 or trades < 10:  # Require at least 10 trades over 1-year period to avoid overfitted fluke trades
+    if profit <= 0 or trades < 100:  # Require at least 100 trades over 1-year period
         return 0.0
         
     return (profit * rf * (trades ** 0.5)) / (((dd + 0.1) ** 2) * penalty)
@@ -169,11 +172,20 @@ def main():
     parser.add_argument("--is-end", type=str, default="2025-06-01", help="In-Sample end date (YYYY-MM-DD)")
     parser.add_argument("--oos-start", type=str, default="2025-06-01", help="Out-of-Sample start date (YYYY-MM-DD)")
     parser.add_argument("--oos-end", type=str, default="2026-06-01", help="Out-of-Sample end date (YYYY-MM-DD)")
+    parser.add_argument("--timeframe", type=str, default="M15", help="Strategy Timeframe (e.g. M15, M30, H1)")
     args = parser.parse_args()
     
     print("\n=======================================================")
-    print("STARTING WALK-FORWARD OPTIMIZATION: XAUUSD H1 ONNX BOT")
+    print(f"STARTING WALK-FORWARD OPTIMIZATION: XAUUSD {args.timeframe} ONNX BOT")
     print("=======================================================")
+    
+    # Timeframe mapping to MT5 period values
+    timeframe_map = {
+        "M15": 15,
+        "M30": 30,
+        "H1": 16385
+    }
+    tf_val = timeframe_map.get(args.timeframe, 15)
     
     # Verify paths
     if not os.path.exists(JAR_PATH):
@@ -196,9 +208,9 @@ def main():
     print(f"Out-of-Sample Forward Period  : {args.oos_start} to {args.oos_end}")
     
     # 1. Create optimization configuration
-    opt_params = get_optimization_parameters()
+    opt_params = get_optimization_parameters(tf_val)
     write_set_file(opt_params, SET_FILE_PATH)
-    write_json_config(results_dir, args.is_start, args.is_end, model=MODEL_FAST, optimization=OPTIMIZATION_GENETIC)
+    write_json_config(results_dir, args.is_start, args.is_end, model=MODEL_FAST, optimization=OPTIMIZATION_GENETIC, period=args.timeframe)
     
     # 2. Run In-Sample optimization
     print("\nLaunching In-Sample Genetic Search (1-minute OHLC mode for speed)...")
@@ -254,7 +266,7 @@ def main():
         prepare_candidate_set_file(cand, SET_FILE_PATH)
         
         # Run standard backtest in OOS period (no optimization)
-        write_json_config(results_dir, args.oos_start, args.oos_end, model=MODEL_FAST, optimization=OPTIMIZATION_DISABLED)
+        write_json_config(results_dir, args.oos_start, args.oos_end, model=MODEL_FAST, optimization=OPTIMIZATION_DISABLED, period=args.timeframe)
         run_java_tool(results_json_path)
         
         if not os.path.exists(results_json_path):
@@ -301,7 +313,7 @@ def main():
     # 5. Save best settings to settings folder
     best_set_path = os.path.join(WORKSPACE_DIR, "settings", "optimized_xauusd_best.set")
     with open(best_set_path, "w", encoding="utf-16") as sf:
-        sf.write(f"; Best Settings for XAUUSD H1 (OOS Drawdown: {best_cand['oos_drawdown']:.2f}%)\n")
+        sf.write(f"; Best Settings for XAUUSD {args.timeframe} (OOS Drawdown: {best_cand['oos_drawdown']:.2f}%)\n")
         for k, v in best_cand["params"].items():
             sf.write(f"{k}={v}\n")
     print(f"\nSaved best parameters preset to: {best_set_path}")
@@ -309,7 +321,7 @@ def main():
     # 6. Execute Final 2-Year Verification (Full tick-by-tick based on real ticks)
     print("\nRunning Final 2-Year Real-Ticks Verification Backtest...")
     prepare_candidate_set_file(best_cand, SET_FILE_PATH)
-    write_json_config(results_dir, args.is_start, args.oos_end, model=MODEL_REAL_TICKS, optimization=OPTIMIZATION_DISABLED)
+    write_json_config(results_dir, args.is_start, args.oos_end, model=MODEL_REAL_TICKS, optimization=OPTIMIZATION_DISABLED, period=args.timeframe)
     run_java_tool(results_json_path)
     
     if not os.path.exists(results_json_path):

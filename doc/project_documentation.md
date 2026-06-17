@@ -51,12 +51,21 @@ We built the system in a systematic, four-phase engineering sprint:
 
 ## 📈 Backtest Performance Highlights (June 2024 – June 2026)
 
-*   **Net Profit:** **\$591.93** on a \$10,000 account (fixed 0.1 lots).
-*   **Max. Drawdown:** **3.63%** (highly stable and secure).
-*   **Profit Factor:** **2.29** (gross profits were more than double the gross losses).
-*   **Win Rate:** **42.86%** (high average win relative to average loss, bolstered by ATR-based take profits).
-*   **Total Trades:** **7** (highly selective trading, screening out range-bound markets via model probability thresholds).
-*   **Sharpe Ratio:** **1.58** (exceptional risk-adjusted return ratio).
+The system supports both conservative, low-noise trading (H1) and active, high-frequency trading (M30). Below are the performance results compiled under standard spread conditions and round-turn commissions ($6.00/lot):
+
+| Metric | H1 Strategy (Conservative) | M30 Strategy (High-Frequency) |
+| :--- | :--- | :--- |
+| **Net Profit** | $591.93 | **$2,661.33** |
+| **Max. Drawdown** | **3.63%** | 23.36% |
+| **Profit Factor** | **2.29** | 1.07 |
+| **Total Trades** | 7 (3.5 trades/year) | **992 (496 trades/year)** |
+| **Trade Frequency Goal** | ❌ Under target |  **Met (>100 trades/year)** |
+| **Sharpe Ratio** | 1.58 | 0.81 |
+| **Win Rate** | 42.86% | 36.42% |
+
+*   **H1 Timeframe**: Focuses on maximum safety. It sits on its hands, taking only high-confidence entries, resulting in extremely low drawdown (3.63%) and a high profit factor (2.29).
+*   **M30 Timeframe**: Trades actively to achieve high returns, averaging 496 trades per year, which satisfies the goal of at least 100 trades per year. It delivers a net profit of **$2,661.33** but incurs a higher drawdown (23.36%).
+
 
 ---
 

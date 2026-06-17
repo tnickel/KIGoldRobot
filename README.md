@@ -51,19 +51,28 @@ graph TD
 
 ---
 
-## 📈 Performance & Verification Results
+## 📈 Performance & Verification Results (H1 vs. M30)
 
-A 2-year high-precision backtest (June 2024 to June 2026) using tick-by-tick real data achieved the following results:
+The system supports both conservative, low-noise trading (H1) and active, high-frequency trading (M30). Below is a comparison of the 2-year high-precision backtests (June 2024 to June 2026) using tick-by-tick real market data under standard spreads and commissions ($6.00/lot round-turn):
 
-- **Net Profit**: **\$591.93** (on a \$10,000 start balance, fixed 0.1 lot)
-- **Max. Drawdown**: **3.63%** (exceptionally low-risk curve)
-- **Profit Factor**: **2.29**
-- **Total Trades**: **7** (highly selective, low-noise trades filtered by model confidence)
-- **Sharpe Ratio**: **1.58**
+| Metric | H1 Strategy (Conservative) | M30 Strategy (High-Frequency) |
+| :--- | :--- | :--- |
+| **Evaluation Period** | June 2024 – June 2026 | June 2024 – June 2026 |
+| **Net Profit** | $591.93 | **$2,661.33** |
+| **Max. Drawdown** | **3.63%** | 23.36% |
+| **Profit Factor** | **2.29** | 1.07 |
+| **Total Trades** | 7 (3.5 trades/year) | **992 (496 trades/year)** |
+| **Trade Frequency Goal** | ❌ Below 100 trades/yr target |  **Met (>100 trades/yr)** |
+| **Sharpe Ratio** | 1.58 | 0.81 |
+| **Win Rate** | 42.86% | 36.42% |
 
-### Equity Curve
+### Strategy Trade-offs
+*   **H1 Timeframe**: Sits on its hands, taking only high-confidence entries. It is highly secure (3.63% max drawdown) but has extremely low trading volume.
+*   **M30 Timeframe**: Trades dynamically, meeting the user requirement of **at least 100 trades per year** (averaging 496 trades per year). It delivers a significantly higher total net profit of **$2,661.33** but with higher equity fluctuations (23.36% drawdown).
 
-![Equity Curve](./doc/BacktestReport.png)
+### Equity Curve (H1)
+
+![H1 Equity Curve](./doc/BacktestReport.png)
 
 ---
 
@@ -75,9 +84,9 @@ A 2-year high-precision backtest (June 2024 to June 2026) using tick-by-tick rea
 
 ### Steps
 1. **Fetch Data**:
-   Ensure MT5 is running, then execute:
+   Ensure MT5 is running, then execute (default is M15, use `--timeframe M30` for our optimized active strategy):
    ```bash
-   python XAUUSD_ONNX_Project/python_scripts/01_data_fetch.py
+   python XAUUSD_ONNX_Project/python_scripts/01_data_fetch.py --timeframe M30
    ```
 2. **Train Model & Export ONNX**:
    ```bash
@@ -89,8 +98,10 @@ A 2-year high-precision backtest (June 2024 to June 2026) using tick-by-tick rea
    & "C:\Forex\Mt5\TickmillLifeMql5\metaeditor64.exe" /portable /compile:"D:\AntiGravitySoftware\GitWorkspace\KIGoldRobot\XAUUSD_ONNX_Project\mql5_ea\XAU_ONNX_Bot.mq5" /log:"D:\AntiGravitySoftware\GitWorkspace\KIGoldRobot\XAUUSD_ONNX_Project\mql5_ea\compile_output.log"
    ```
 4. **Run Parameter Optimization**:
+   Specify the timeframe to target:
    ```bash
-   python XAUUSD_ONNX_Project/python_scripts/03_optimize_ea.py
+   python XAUUSD_ONNX_Project/python_scripts/03_optimize_ea.py --timeframe M30
    ```
 5. **Load Preset**:
    Load `settings/optimized_xauusd_best.set` in your MT5 Strategy Tester parameters and run the bot.
+

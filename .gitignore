@@ -12,7 +12,7 @@ temp_opt.set
 
 # Auto-generated reports & exports
 backtest_reports/
-data/xauusd_h1_features.csv
+XAUUSD_ONNX_Project/data/*.csv
 
 # Python caching
 __pycache__/
