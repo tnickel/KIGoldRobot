@@ -90,27 +90,76 @@ def initialize_mt5():
     return symbol_info
 
 
+def fetch_symbol_data(symbol, timeframe, utc_from, utc_to):
+    """Helper to fetch rates for a symbol and convert to DataFrame."""
+    print(f"Fetching data for {symbol}...")
+    # Select symbol
+    if not mt5.symbol_select(symbol, True):
+        print(f"Failed to select symbol {symbol}")
+        return None
+    rates = mt5.copy_rates_range(symbol, timeframe, utc_from, utc_to)
+    if rates is None or len(rates) == 0:
+        print(f"No rates found for {symbol}. Error: {mt5.last_error()}")
+        return None
+    df = pd.DataFrame(rates)
+    df['time'] = pd.to_datetime(df['time'], unit='s')
+    df.set_index('time', inplace=True)
+    return df
+
+
 def fetch_historical_data(years):
-    """Fetches years of historical H1 data from MT5 for SYMBOL."""
+    """Fetches years of historical data from MT5 for XAUUSD, DXY, and VIX, then joins them."""
     utc_to = datetime.now(timezone.utc)
     utc_from = utc_to - timedelta(days=years * 365)
     
-    print(f"Fetching data for {SYMBOL} from {utc_from.strftime('%Y-%m-%d')} to {utc_to.strftime('%Y-%m-%d')}...")
-    
-    rates = mt5.copy_rates_range(SYMBOL, TIMEFRAME, utc_from, utc_to)
-    
-    if rates is None or len(rates) == 0:
-        print(f"Failed to fetch data. Error: {mt5.last_error()}")
+    # 1. Fetch main XAUUSD data
+    df_xau = fetch_symbol_data(SYMBOL, TIMEFRAME, utc_from, utc_to)
+    if df_xau is None:
+        print("Failed to fetch primary symbol data.")
         mt5.shutdown()
         sys.exit(1)
+    print(f"Successfully fetched {len(df_xau)} candles for {SYMBOL}.")
+
+    # 2. Fetch DXY data
+    df_dxy = fetch_symbol_data("DXY", TIMEFRAME, utc_from, utc_to)
+    if df_dxy is not None:
+        # Calculate DXY EMA20 and DXY ATR14 on its own series
+        dxy_close = df_dxy['close']
+        dxy_high = df_dxy['high']
+        dxy_low = df_dxy['low']
         
-    df = pd.DataFrame(rates)
-    # Convert time in seconds to datetime
-    df['time'] = pd.to_datetime(df['time'], unit='s')
-    df.set_index('time', inplace=True)
-    
-    print(f"Successfully fetched {len(df)} candles.")
-    return df
+        # Calculate DXY ATR 14
+        dxy_hl = dxy_high - dxy_low
+        dxy_hc = (dxy_high - dxy_close.shift(1)).abs()
+        dxy_lc = (dxy_low - dxy_close.shift(1)).abs()
+        dxy_tr = pd.concat([dxy_hl, dxy_hc, dxy_lc], axis=1).max(axis=1)
+        dxy_atr = dxy_tr.ewm(alpha=1/14, adjust=False).mean()
+        
+        # Calculate DXY EMA20
+        dxy_ema20 = dxy_close.ewm(span=20, adjust=False).mean()
+        
+        # Distance normalized
+        df_dxy['dxy_dist_ema20'] = (dxy_close - dxy_ema20) / (dxy_atr + 1e-10)
+        
+        # Merge into df_xau
+        df_xau = df_xau.join(df_dxy[['dxy_dist_ema20']], how='left')
+        df_xau['dxy_dist_ema20'] = df_xau['dxy_dist_ema20'].ffill().bfill()
+        print("Merged DXY features.")
+    else:
+        print("Warning: DXY data not available. Using 0 values.")
+        df_xau['dxy_dist_ema20'] = 0.0
+
+    # 3. Fetch VIX data
+    df_vix = fetch_symbol_data("VIX", TIMEFRAME, utc_from, utc_to)
+    if df_vix is not None:
+        df_xau = df_xau.join(df_vix[['close']].rename(columns={'close': 'vix_close'}), how='left')
+        df_xau['vix_close'] = df_xau['vix_close'].ffill().bfill()
+        print("Merged VIX features.")
+    else:
+        print("Warning: VIX data not available. Using 0 values.")
+        df_xau['vix_close'] = 0.0
+
+    return df_xau
 
 
 def engineer_features(df):
@@ -149,8 +198,6 @@ def engineer_features(df):
     features['rsi'] = 100 - (100 / (1 + rs))
     
     # 3. Moving Average Distances (Normalized by ATR)
-    # Normalizing by ATR ensures that standard deviations / distance thresholds scale 
-    # appropriately with volatility regimes instead of absolute dollar differences.
     ema20 = close.ewm(span=EMA_FAST, adjust=False).mean()
     ema50 = close.ewm(span=EMA_MEDIUM, adjust=False).mean()
     sma200 = close.rolling(window=SMA_SLOW).mean()
@@ -172,11 +219,23 @@ def engineer_features(df):
     features['upper_shadow_norm'] = (high - np.maximum(close, open_p)) / (atr + 1e-10)
     features['lower_shadow_norm'] = (np.minimum(close, open_p) - low) / (atr + 1e-10)
     
-    # 6. Volume Normalization (Relative to 20-period rolling average)
-    rolling_volume = df['real_volume'].rolling(window=20).mean()
-    features['volume_ratio'] = df['real_volume'] / (rolling_volume + 1e-10)
+    # 6. Volume Normalization (Relative to 20-period rolling average) - FIX: Use tick_volume
+    rolling_volume = df['tick_volume'].rolling(window=20).mean()
+    features['tick_volume_ratio'] = df['tick_volume'] / (rolling_volume + 1e-10)
     
-    # 7. Classification Target Construction
+    # 7. External Market Regimes
+    features['dxy_dist_ema20'] = df['dxy_dist_ema20']
+    features['vix_close'] = df['vix_close']
+    
+    # 8. Session & Cyclical Time Features
+    hours = df.index.hour
+    days = df.index.dayofweek
+    features['sin_hour'] = np.sin(2 * np.pi * hours / 24.0)
+    features['cos_hour'] = np.cos(2 * np.pi * hours / 24.0)
+    features['sin_day'] = np.sin(2 * np.pi * days / 7.0)
+    features['cos_day'] = np.cos(2 * np.pi * days / 7.0)
+    
+    # 9. Classification Target Construction
     # Target is defined by the price action of the next bar (t+1)
     next_close = close.shift(-1)
     future_diff = next_close - close
@@ -202,6 +261,7 @@ def engineer_features(df):
     cleaned_features = features.dropna()
     
     return cleaned_features
+
 
 
 def main():

@@ -14,6 +14,7 @@ Crucial:
 
 import os
 import sys
+import json
 import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -41,9 +42,16 @@ FEATURE_COLS = [
     'body_size_norm',
     'upper_shadow_norm',
     'lower_shadow_norm',
-    'volume_ratio'
+    'tick_volume_ratio',
+    'dxy_dist_ema20',
+    'vix_close',
+    'sin_hour',
+    'cos_hour',
+    'sin_day',
+    'cos_day'
 ]
 TARGET_COL = 'target'
+
 
 
 def load_data():
@@ -184,8 +192,49 @@ def main():
     # 5. Export to ONNX
     convert_to_onnx(pipeline, X_train)
     
+    # 6. Save JSON Metrics for GUI
+    save_metrics_json(df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred)
+    
     print("\nPhase 2 execution finished.")
+
+
+def save_metrics_json(df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred):
+    """Saves all evaluation metrics to data/model_metrics.json for GUI visualization."""
+    metrics_path = os.path.join(BASE_DIR, "data", "model_metrics.json")
+    print(f"\nSaving metrics JSON to {metrics_path}...")
+    
+    metrics = {
+        "dataset_size": {
+            "total": int(len(df)),
+            "train": int(len(X_train)),
+            "val": int(len(X_val)),
+            "test": int(len(X_test))
+        },
+        "feature_count": len(FEATURE_COLS),
+        "features": FEATURE_COLS,
+        "accuracies": {
+            "train": float(accuracy_score(y_train, y_train_pred)),
+            "val": float(accuracy_score(y_val, y_val_pred)),
+            "test": float(accuracy_score(y_test, y_test_pred))
+        },
+        "classification_reports": {
+            "train": classification_report(y_train, y_train_pred, zero_division=0, output_dict=True),
+            "val": classification_report(y_val, y_val_pred, zero_division=0, output_dict=True),
+            "test": classification_report(y_test, y_test_pred, zero_division=0, output_dict=True)
+        },
+        "confusion_matrices": {
+            "train": confusion_matrix(y_train, y_train_pred, labels=[-1, 0, 1]).tolist(),
+            "val": confusion_matrix(y_val, y_val_pred, labels=[-1, 0, 1]).tolist(),
+            "test": confusion_matrix(y_test, y_test_pred, labels=[-1, 0, 1]).tolist()
+        }
+    }
+    
+    os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+    print("Metrics JSON saved successfully.")
 
 
 if __name__ == "__main__":
     main()
+

@@ -51,9 +51,11 @@ int      handle_ema20   = INVALID_HANDLE;
 int      handle_ema50   = INVALID_HANDLE;
 int      handle_sma200  = INVALID_HANDLE;
 int      handle_macd    = INVALID_HANDLE;
+int      handle_dxy_ema20 = INVALID_HANDLE;
+int      handle_dxy_atr   = INVALID_HANDLE;
 
 // Model tensor definitions
-#define INPUT_FEATURES_COUNT 10
+#define INPUT_FEATURES_COUNT 16
 #define OUTPUT_CLASSES_COUNT 3
 
 //+------------------------------------------------------------------+
@@ -80,7 +82,7 @@ int OnInit()
    }
    
    // 4. Set ONNX Input & Output Shapes
-   // Input shape: [1, 10] -> Batch size = 1, Features = 10
+   // Input shape: [1, 16] -> Batch size = 1, Features = 16
    const long input_shape[] = {1, INPUT_FEATURES_COUNT};
    if(!OnnxSetInputShape(onnx_handle, 0, input_shape))
    {
@@ -108,16 +110,19 @@ int OnInit()
    }
    
    // 5. Initialize Indicator Handles (aligned with Python feature definitions)
-   handle_atr    = iATR(Symbol(), InpTimeFrame, 14);
-   handle_rsi    = iRSI(Symbol(), InpTimeFrame, 14, PRICE_CLOSE);
-   handle_ema20  = iMA(Symbol(), InpTimeFrame, 20, 0, MODE_EMA, PRICE_CLOSE);
-   handle_ema50  = iMA(Symbol(), InpTimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE);
-   handle_sma200 = iMA(Symbol(), InpTimeFrame, 200, 0, MODE_SMA, PRICE_CLOSE);
-   handle_macd   = iMACD(Symbol(), InpTimeFrame, 12, 26, 9, PRICE_CLOSE);
+   handle_atr       = iATR(Symbol(), InpTimeFrame, 14);
+   handle_rsi       = iRSI(Symbol(), InpTimeFrame, 14, PRICE_CLOSE);
+   handle_ema20     = iMA(Symbol(), InpTimeFrame, 20, 0, MODE_EMA, PRICE_CLOSE);
+   handle_ema50     = iMA(Symbol(), InpTimeFrame, 50, 0, MODE_EMA, PRICE_CLOSE);
+   handle_sma200    = iMA(Symbol(), InpTimeFrame, 200, 0, MODE_SMA, PRICE_CLOSE);
+   handle_macd      = iMACD(Symbol(), InpTimeFrame, 12, 26, 9, PRICE_CLOSE);
+   handle_dxy_ema20 = iMA("DXY", InpTimeFrame, 20, 0, MODE_EMA, PRICE_CLOSE);
+   handle_dxy_atr   = iATR("DXY", InpTimeFrame, 14);
    
    if(handle_atr == INVALID_HANDLE || handle_rsi == INVALID_HANDLE ||
       handle_ema20 == INVALID_HANDLE || handle_ema50 == INVALID_HANDLE ||
-      handle_sma200 == INVALID_HANDLE || handle_macd == INVALID_HANDLE)
+      handle_sma200 == INVALID_HANDLE || handle_macd == INVALID_HANDLE ||
+      handle_dxy_ema20 == INVALID_HANDLE || handle_dxy_atr == INVALID_HANDLE)
    {
       Print("Failed to initialize indicator handles. Error code: ", GetLastError());
       OnnxRelease(onnx_handle);
@@ -155,6 +160,8 @@ void OnDeinit(const int reason)
    IndicatorRelease(handle_ema50);
    IndicatorRelease(handle_sma200);
    IndicatorRelease(handle_macd);
+   IndicatorRelease(handle_dxy_ema20);
+   IndicatorRelease(handle_dxy_atr);
 }
 
 //+------------------------------------------------------------------+
@@ -227,6 +234,7 @@ void OnTick()
    }
    
    double atr_val[1], rsi_val[1], ema20_val[1], ema50_val[1], sma200_val[1], macd_main[1], macd_sig[1];
+   double dxy_ema20_val[1], dxy_atr_val[1];
    
    if(CopyBuffer(handle_atr, 0, 1, 1, atr_val) < 1 ||
       CopyBuffer(handle_rsi, 0, 1, 1, rsi_val) < 1 ||
@@ -234,7 +242,9 @@ void OnTick()
       CopyBuffer(handle_ema50, 0, 1, 1, ema50_val) < 1 ||
       CopyBuffer(handle_sma200, 0, 1, 1, sma200_val) < 1 ||
       CopyBuffer(handle_macd, 0, 1, 1, macd_main) < 1 ||
-      CopyBuffer(handle_macd, 1, 1, 1, macd_sig) < 1)
+      CopyBuffer(handle_macd, 1, 1, 1, macd_sig) < 1 ||
+      CopyBuffer(handle_dxy_ema20, 0, 1, 1, dxy_ema20_val) < 1 ||
+      CopyBuffer(handle_dxy_atr, 0, 1, 1, dxy_atr_val) < 1)
    {
       Print("Failed to copy indicator buffer values.");
       return;
@@ -250,14 +260,36 @@ void OnTick()
       return;
    }
    
-   // 3. Compute Volume Ratio (current real volume / average of last 20)
+   // Fetch DXY and VIX close prices safely
+   double dxy_close = 100.0;
+   double vix_close = 15.0;
+   
+   MqlRates dxy_rates[];
+   if(CopyRates("DXY", InpTimeFrame, 1, 1, dxy_rates) >= 1)
+      dxy_close = dxy_rates[0].close;
+      
+   MqlRates vix_rates[];
+   if(CopyRates("VIX", InpTimeFrame, 1, 1, vix_rates) >= 1)
+      vix_close = vix_rates[0].close;
+      
+   // Calculate Cyclical Time Features
+   MqlDateTime dt;
+   TimeToStruct(rates[19].time, dt);
+   
+   double pi = 3.141592653589793;
+   float sin_hour = (float)MathSin(2.0 * pi * dt.hour / 24.0);
+   float cos_hour = (float)MathCos(2.0 * pi * dt.hour / 24.0);
+   float sin_day  = (float)MathSin(2.0 * pi * dt.day_of_week / 7.0);
+   float cos_day  = (float)MathCos(2.0 * pi * dt.day_of_week / 7.0);
+   
+   // 3. Compute Volume Ratio (current tick volume / average of last 20)
    double volume_sum = 0;
    for(int i = 0; i < 20; i++)
    {
-      volume_sum += (double)rates[i].real_volume;
+      volume_sum += (double)rates[i].tick_volume;
    }
    double volume_avg = volume_sum / 20.0;
-   double vol_ratio = (double)rates[19].real_volume / (volume_avg + 1e-10);
+   double vol_ratio = (double)rates[19].tick_volume / (volume_avg + 1e-10);
    
    // 4. Feature Calculations (normalized by ATR for scale invariance)
    float input_features[INPUT_FEATURES_COUNT];
@@ -271,6 +303,18 @@ void OnTick()
    input_features[7] = (float)((rates[19].high - MathMax(rates[19].close, rates[19].open)) / atr_v);
    input_features[8] = (float)((MathMin(rates[19].close, rates[19].open) - rates[19].low) / atr_v);
    input_features[9] = (float)vol_ratio;
+   
+   // DXY ATR-normalized distance to EMA20
+   double dxy_atr_v = dxy_atr_val[0];
+   if(dxy_atr_v <= 0.0) dxy_atr_v = 0.1;
+   input_features[10] = (float)((dxy_close - dxy_ema20_val[0]) / dxy_atr_v);
+   input_features[11] = (float)vix_close;
+   
+   // Cyclical Time Features
+   input_features[12] = sin_hour;
+   input_features[13] = cos_hour;
+   input_features[14] = sin_day;
+   input_features[15] = cos_day;
    
    // 5. Execute ONNX Model Inference
    long  output_label[1];

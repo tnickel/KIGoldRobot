@@ -49,6 +49,13 @@ graph TD
 - Runs high-precision verification on "Every tick based on real ticks".
 - Saves best-performing presets directly to `settings/optimized_xauusd_best.set`.
 
+### Phase 5: Graphical Pipeline Interface (`04_pipeline_gui.py`)
+- **Interactive Dashboard**: A desktop application built with Tkinter, featuring a modern dark-theme layout.
+- **Modell-Metriken**: Displays real-time training, validation, and test accuracies alongside classification reports.
+- **Feature-Visualisierung**: Lists the 16 features mapping in the ONNX model input vector.
+- **Konfusionsmatrix-Heatmap**: Draws an interactive heatmap grid showing model prediction hits and misses.
+- **Live-Konsole**: Launches model retraining asynchronously in the background, capturing logs live to a scrolling console screen without freezing the GUI.
+
 ---
 
 ## 📈 Performance & Verification Results (H1 vs. M30)
@@ -58,17 +65,17 @@ The system supports both conservative, low-noise trading (H1) and active, high-f
 | Metric | H1 Strategy (Conservative) | M30 Strategy (High-Frequency) |
 | :--- | :--- | :--- |
 | **Evaluation Period** | June 2024 – June 2026 | June 2024 – June 2026 |
-| **Net Profit** | $591.93 | **$2,661.33** |
-| **Max. Drawdown** | **3.63%** | 23.36% |
-| **Profit Factor** | **2.29** | 1.07 |
-| **Total Trades** | 7 (3.5 trades/year) | **992 (496 trades/year)** |
+| **Net Profit** | $591.93 | **$1,805.07** |
+| **Max. Drawdown** | **3.63%** | 25.74% |
+| **Profit Factor** | **2.29** | 1.06 |
+| **Total Trades** | 7 (3.5 trades/year) | **844 (422 trades/year)** |
 | **Trade Frequency Goal** | ❌ Below 100 trades/yr target |  **Met (>100 trades/yr)** |
-| **Sharpe Ratio** | 1.58 | 0.81 |
-| **Win Rate** | 42.86% | 36.42% |
+| **Sharpe Ratio** | 1.58 | 0.76 |
+| **Win Rate** | 42.86% | 38.14% |
 
 ### Strategy Trade-offs
 *   **H1 Timeframe**: Sits on its hands, taking only high-confidence entries. It is highly secure (3.63% max drawdown) but has extremely low trading volume.
-*   **M30 Timeframe**: Trades dynamically, meeting the user requirement of **at least 100 trades per year** (averaging 496 trades per year). It delivers a significantly higher total net profit of **$2,661.33** but with higher equity fluctuations (23.36% drawdown).
+*   **M30 Timeframe**: Trades dynamically, meeting the user requirement of **at least 100 trades per year** (averaging 422 trades per year). It delivers a significantly higher total net profit of **$1,805.07** but with higher equity fluctuations (25.74% drawdown).
 
 ### Equity Curve (H1)
 
@@ -104,4 +111,10 @@ The system supports both conservative, low-noise trading (H1) and active, high-f
    ```
 5. **Load Preset**:
    Load `settings/optimized_xauusd_best.set` in your MT5 Strategy Tester parameters and run the bot.
+6. **Launch Pipeline Dashboard GUI**:
+   Start the interactive dark-themed GUI dashboard to check the model quality, feature shapes, confusion matrix, or retrain the model live:
+   ```bash
+   python XAUUSD_ONNX_Project/python_scripts/04_pipeline_gui.py
+   ```
+
 
