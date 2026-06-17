@@ -193,17 +193,46 @@ def main():
     convert_to_onnx(pipeline, X_train)
     
     # 6. Save JSON Metrics for GUI
-    save_metrics_json(df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred)
+    save_metrics_json(pipeline, df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred)
     
     print("\nPhase 2 execution finished.")
 
 
-def save_metrics_json(df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred):
+def save_metrics_json(pipeline, df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred):
     """Saves all evaluation metrics to data/model_metrics.json for GUI visualization."""
     metrics_path = os.path.join(BASE_DIR, "data", "model_metrics.json")
     print(f"\nSaving metrics JSON to {metrics_path}...")
     
+    # Extract structural details of Random Forest
+    classifier = pipeline.named_steps['classifier']
+    total_nodes = int(sum(e.tree_.node_count for e in classifier.estimators_))
+    avg_nodes_per_tree = float(total_nodes / len(classifier.estimators_))
+    max_actual_depth = int(max(e.tree_.max_depth for e in classifier.estimators_))
+    avg_actual_depth = float(sum(e.tree_.max_depth for e in classifier.estimators_) / len(classifier.estimators_))
+    
+    onnx_size_bytes = 0
+    if os.path.exists(MODEL_OUT_PATH):
+        onnx_size_bytes = os.path.getsize(MODEL_OUT_PATH)
+        
     metrics = {
+        "algorithm": {
+            "name": "Random Forest",
+            "parameters": {
+                "n_estimators": 150,
+                "max_depth": 6,
+                "min_samples_leaf": 15,
+                "class_weight": "balanced"
+            }
+        },
+        "forest_details": {
+            "n_estimators": int(classifier.n_estimators),
+            "max_depth_limit": int(classifier.max_depth) if classifier.max_depth else None,
+            "total_nodes": total_nodes,
+            "avg_nodes_per_tree": avg_nodes_per_tree,
+            "max_actual_depth": max_actual_depth,
+            "avg_actual_depth": avg_actual_depth,
+            "onnx_size_bytes": onnx_size_bytes
+        },
         "dataset_size": {
             "total": int(len(df)),
             "train": int(len(X_train)),

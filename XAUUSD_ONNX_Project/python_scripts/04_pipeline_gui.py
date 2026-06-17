@@ -126,12 +126,6 @@ class MLPipelineGUI:
         self.param_frame = tk.Frame(sidebar, bg=BG_SIDEBAR)
         self.param_frame.pack(fill="x", padx=20, pady=15)
         
-        self.add_param_val("Instrument:", "XAUUSD (Gold)")
-        self.add_param_val("Timeframe:", "M30 (High-Frequency)")
-        self.add_param_val("Model-Typ:", "Random Forest (ONNX)")
-        self.add_param_val("Features:", "16 Features active")
-        self.add_param_val("Targets:", "3 Classes (-1, 0, 1)")
-        
         # Spacer
         spacer = tk.Label(sidebar, bg=BG_SIDEBAR)
         spacer.pack(fill="both", expand=True)
@@ -158,6 +152,17 @@ class MLPipelineGUI:
         lbl.pack(side="left")
         val = tk.Label(f, text=val_text, bg=BG_SIDEBAR, fg=FG_LIGHT, font=("Segoe UI", 9, "bold"))
         val.pack(side="right")
+
+    def add_detail_box(self, parent, col, label, value):
+        """Helper to render a key-value detail box inside the forest details area."""
+        box = tk.Frame(parent, bg=BG_CARD, padx=10, pady=5)
+        box.grid(row=0, column=col, sticky="nsew")
+        
+        lbl_l = tk.Label(box, text=label.upper(), bg=BG_CARD, fg=FG_MUTED, font=("Segoe UI", 8, "bold"))
+        lbl_l.pack(anchor="w")
+        
+        lbl_v = tk.Label(box, text=value, bg=BG_CARD, fg=COLOR_ACCENT, font=("Segoe UI", 12, "bold"))
+        lbl_v.pack(anchor="w", pady=(2, 0))
 
     def build_main_content(self):
         """Builds the tabbed panel in the right area."""
@@ -228,16 +233,39 @@ class MLPipelineGUI:
 
     def load_metrics_data(self):
         """Loads model_metrics.json file and updates layout values."""
-        if not os.path.exists(METRICS_PATH):
+        if os.path.exists(METRICS_PATH):
+            try:
+                with open(METRICS_PATH, "r", encoding="utf-8") as f:
+                    self.metrics = json.load(f)
+            except Exception as e:
+                self.metrics = None
+                print(f"Error loading metrics JSON: {e}")
+        else:
             self.metrics = None
-            return
             
-        try:
-            with open(METRICS_PATH, "r", encoding="utf-8") as f:
-                self.metrics = json.load(f)
-        except Exception as e:
-            self.metrics = None
-            print(f"Error loading metrics JSON: {e}")
+        self.refresh_parameters()
+
+    def refresh_parameters(self):
+        """Refreshes the sidebar parameter values dynamically based on loaded metrics."""
+        for widget in self.param_frame.winfo_children():
+            widget.destroy()
+            
+        self.add_param_val("Instrument:", "XAUUSD (Gold)")
+        self.add_param_val("Timeframe:", "M30")
+        
+        if self.metrics and "algorithm" in self.metrics:
+            algo = self.metrics["algorithm"]
+            params = algo.get("parameters", {})
+            self.add_param_val("Lernalgo:", algo.get("name", "Random Forest"))
+            self.add_param_val("Schätzer (Bäume):", str(params.get("n_estimators", 150)))
+            self.add_param_val("Max. Tiefe:", str(params.get("max_depth", 6)))
+        else:
+            self.add_param_val("Lernalgo:", "Random Forest (ONNX)")
+            
+        feat_count = self.metrics.get("feature_count", 16) if self.metrics else 16
+        self.add_param_val("Features:", f"{feat_count} Features active")
+        self.add_param_val("Targets:", "3 Classes (-1, 0, 1)")
+
             
     def render_tab_content(self, tab_id):
         """Renders specific widgets in selected tab frames."""
@@ -334,6 +362,34 @@ class MLPipelineGUI:
                 tk.Label(table_frame, text=f"{item['f1-score']*100:.1f}%", bg=bg_col, fg=FG_LIGHT, font=("Segoe UI", 9), pady=6).grid(row=row_idx, column=3, sticky="ew")
                 tk.Label(table_frame, text=str(int(item['support'])), bg=bg_col, fg=FG_MUTED, font=("Segoe UI", 9), pady=6).grid(row=row_idx, column=4, sticky="ew")
                 row_idx += 1
+                
+        # Forest structural details card below table
+        if "forest_details" in self.metrics:
+            details = self.metrics["forest_details"]
+            
+            lbl_forest_t = tk.Label(frame, text="Struktur des gelernten Random Forest (Wald-Größe)", bg=BG_DARK, fg=FG_LIGHT, font=("Segoe UI", 12, "bold"))
+            lbl_forest_t.grid(row=4, column=0, columnspan=3, sticky="w", pady=(25, 10))
+            
+            forest_frame = tk.Frame(frame, bg=BG_CARD, bd=0, highlightthickness=1, highlightbackground=BORDER_COLOR, padx=15, pady=12)
+            forest_frame.grid(row=5, column=0, columnspan=3, sticky="ew")
+            
+            # Subgrid inside forest details
+            forest_frame.grid_columnconfigure(0, weight=1)
+            forest_frame.grid_columnconfigure(1, weight=1)
+            forest_frame.grid_columnconfigure(2, weight=1)
+            forest_frame.grid_columnconfigure(3, weight=1)
+            
+            # Details:
+            # 1. Total trees
+            self.add_detail_box(forest_frame, 0, "Bäume gesamt (Trees)", str(details.get("n_estimators", 150)))
+            # 2. Total nodes
+            self.add_detail_box(forest_frame, 1, "Knoten gesamt (Nodes)", f"{details.get('total_nodes', 0):,}")
+            # 3. Avg nodes
+            self.add_detail_box(forest_frame, 2, "Ø Knoten pro Baum", f"{details.get('avg_nodes_per_tree', 0.0):.1f}")
+            # 4. ONNX size
+            onnx_kb = details.get("onnx_size_bytes", 0) / 1024.0
+            self.add_detail_box(forest_frame, 3, "ONNX Dateigröße", f"{onnx_kb:.1f} KB")
+
 
     def render_features_tab(self, frame):
         """Displays list of 16 features mapping inside the ONNX model."""

@@ -1,4 +1,22 @@
 {
+  "algorithm": {
+    "name": "Random Forest",
+    "parameters": {
+      "n_estimators": 150,
+      "max_depth": 6,
+      "min_samples_leaf": 15,
+      "class_weight": "balanced"
+    }
+  },
+  "forest_details": {
+    "n_estimators": 150,
+    "max_depth_limit": 6,
+    "total_nodes": 16450,
+    "avg_nodes_per_tree": 109.66666666666667,
+    "max_actual_depth": 6,
+    "avg_actual_depth": 6.0,
+    "onnx_size_bytes": 790392
+  },
   "dataset_size": {
     "total": 58863,
     "train": 41204,
