@@ -22,12 +22,13 @@ This documentation serves as a structured project brief detailing the **KIGoldRo
 | **Model Serialization**| Python `skl2onnx`, `onnx` | Converts the full scikit-learn preprocessing and model pipeline into a single, optimized `.onnx` graph (ZipMap disabled). |
 | **Inference & Strategy**| MQL5 (Strict Mode) | Custom Expert Advisor (`XAU_ONNX_Bot.mq5`) that compiles the model natively as a resource for local execution. |
 | **Backtest Automation** | Java SE, CLI wrapper, MT5 Tester | Auto-configures and runs genetic optimizations and walk-forward verification via cmdline. |
+| **Pipeline UI** | Python `tkinter`, `ttk` | Modern, dark-themed GUI dashboard visualizing model metrics, feature importances, confusion matrix, and training logs. |
 
 ---
 
 ## 📐 Development Methodology & Step-by-Step Execution
 
-We built the system in a systematic, four-phase engineering sprint:
+We built the system in a systematic, five-phase engineering sprint:
 
 ### Phase 1: Python-Driven Volatility Scaling (ATR Normalization)
 *   **Why absolute prices fail:** Over 5 years, Gold moved from \$1,200 to \$2,400. A standard absolute dollar change does not mean the same thing in different price regimes.
@@ -46,6 +47,14 @@ We built the system in a systematic, four-phase engineering sprint:
 ### Phase 4: Walk-Forward Genetic Optimization
 *   We created a script (`03_optimize_ea.py`) that uses a Java CLI tool to perform walk-forward parameter selection.
 *   The script runs genetic optimization on the In-Sample period, filters the top 5 candidates against out-of-sample data, and verifies the best setup using high-precision, tick-by-tick MT5 Strategy Tester execution.
+
+### Phase 5: Graphical Pipeline Interface & Feature Ranking
+*   We developed an interactive, dark-themed Tkinter GUI (`04_pipeline_gui.py`) that acts as a cockpit for the machine learning pipeline.
+*   It displays train/val/test accuracies, details the ensemble complexity (tree counts, depths, and decision nodes), renders an interactive actual-vs-predicted confusion matrix heatmap, and visualizes the dynamically computed **feature importances**.
+*   It supports asynchronous model retraining directly from the interface, showing real-time logs in a dedicated scrolling console.
+
+![Pipeline GUI Dashboard Feature Importances](./pipeline_gui_feature_importances.png)
+
 
 ---
 

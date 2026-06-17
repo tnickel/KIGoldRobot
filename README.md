@@ -52,9 +52,13 @@ graph TD
 ### Phase 5: Graphical Pipeline Interface (`04_pipeline_gui.py`)
 - **Interactive Dashboard**: A desktop application built with Tkinter, featuring a modern dark-theme layout.
 - **Modell-Metriken**: Displays real-time training, validation, and test accuracies alongside classification reports.
-- **Feature-Visualisierung**: Lists the 16 features mapping in the ONNX model input vector.
+- **Feature-Visualisierung**: Lists the 16 features mapping in the ONNX model input vector, ranked dynamically by mathematical feature importance.
 - **Konfusionsmatrix-Heatmap**: Draws an interactive heatmap grid showing model prediction hits and misses.
 - **Live-Konsole**: Launches model retraining asynchronously in the background, capturing logs live to a scrolling console screen without freezing the GUI.
+
+#### Pipeline GUI Dashboard
+![Pipeline GUI Dashboard Feature Importances](./doc/pipeline_gui_feature_importances.png)
+
 
 ---
 
