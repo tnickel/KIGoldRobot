@@ -154,6 +154,53 @@ def convert_to_onnx(pipeline, X_sample):
         print(f"    - Name: '{output_tensor.name}', Type: {type_str}, Shape: {shape}")
 
 
+def print_forest_summary(pipeline, elapsed_time):
+    """Prints Random Forest structure and feature importances to console in a beautiful format."""
+    classifier = pipeline.named_steps['classifier']
+    total_nodes = sum(e.tree_.node_count for e in classifier.estimators_)
+    avg_nodes = total_nodes / len(classifier.estimators_)
+    max_depth = max(e.tree_.max_depth for e in classifier.estimators_)
+    avg_depth = sum(e.tree_.max_depth for e in classifier.estimators_) / len(classifier.estimators_)
+    
+    print("\n" + "="*70)
+    print("      RANDOM FOREST MODEL STRUCTURE & PARAMETERS")
+    print("="*70)
+    print(f"  Ensemble Algorithm  : Random Forest Classifier")
+    print(f"  Number of Trees     : {classifier.n_estimators}")
+    print(f"  Max Depth Limit     : {classifier.max_depth}")
+    print(f"  Min Samples Leaf    : {classifier.min_samples_leaf}")
+    print(f"  Class Weight        : {classifier.class_weight}")
+    print(f"  Training Duration   : {elapsed_time:.4f} seconds")
+    print("-"*70)
+    print(f"  Total Decision Nodes: {total_nodes:,}")
+    print(f"  Avg Nodes per Tree  : {avg_nodes:.1f}")
+    print(f"  Max Actual Depth    : {max_depth}")
+    print(f"  Avg Tree Depth      : {avg_depth:.1f}")
+    print("="*70)
+    
+    # Extract feature importances
+    importances = classifier.feature_importances_
+    feat_imp = []
+    for name, imp in zip(FEATURE_COLS, importances):
+        feat_imp.append((name, imp))
+    feat_imp.sort(key=lambda x: x[1], reverse=True)
+    
+    print("\n" + "="*70)
+    print("             RANKED FEATURE IMPORTANCES")
+    print("="*70)
+    print(f"  {'Rank':<4} | {'Feature Name':<20} | {'Importance':<10} | {'Visual Distribution'}")
+    print("-"*70)
+    
+    max_imp = feat_imp[0][1] if feat_imp else 1.0
+    for idx, (name, imp) in enumerate(feat_imp):
+        percentage = imp * 100
+        # Build text-based bar (width 24 chars) using safe ASCII characters
+        bar_width = int((imp / max_imp) * 24) if max_imp > 0 else 0
+        bar = "=" * bar_width + "." * (24 - bar_width)
+        print(f"  #{idx+1:02d} | {name:<20} | {percentage:>9.2f}% | {bar}")
+    print("="*70 + "\n")
+
+
 def main():
     # 1. Load and Split Data
     df = load_data()
@@ -176,8 +223,11 @@ def main():
     
     # 3. Train the Model
     print("\nTraining RandomForest Pipeline (Scaling + Classifier)...")
+    import time
+    start_time = time.time()
     pipeline.fit(X_train, y_train)
-    print("Training completed.")
+    elapsed_time = time.time() - start_time
+    print(f"Training completed in {elapsed_time:.4f} seconds.")
     
     # 4. Evaluate on Train, Val, and Test Splits
     y_train_pred = pipeline.predict(X_train)
@@ -192,13 +242,18 @@ def main():
     # 5. Export to ONNX
     convert_to_onnx(pipeline, X_train)
     
+    # 5b. Print summary
+    print_forest_summary(pipeline, elapsed_time)
+    
     # 6. Save JSON Metrics for GUI
-    save_metrics_json(pipeline, df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred)
+    save_metrics_json(pipeline, elapsed_time, df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred)
+
     
     print("\nPhase 2 execution finished.")
 
 
-def save_metrics_json(pipeline, df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred):
+
+def save_metrics_json(pipeline, elapsed_time, df, X_train, y_train, y_train_pred, X_val, y_val, y_val_pred, X_test, y_test, y_test_pred):
     """Saves all evaluation metrics to data/model_metrics.json for GUI visualization."""
     metrics_path = os.path.join(BASE_DIR, "data", "model_metrics.json")
     print(f"\nSaving metrics JSON to {metrics_path}...")
@@ -209,6 +264,16 @@ def save_metrics_json(pipeline, df, X_train, y_train, y_train_pred, X_val, y_val
     avg_nodes_per_tree = float(total_nodes / len(classifier.estimators_))
     max_actual_depth = int(max(e.tree_.max_depth for e in classifier.estimators_))
     avg_actual_depth = float(sum(e.tree_.max_depth for e in classifier.estimators_) / len(classifier.estimators_))
+    
+    # Extract feature importances
+    importances = classifier.feature_importances_
+    feat_imp = []
+    for name, imp in zip(FEATURE_COLS, importances):
+        feat_imp.append({
+            "name": name,
+            "importance": float(imp)
+        })
+    feat_imp.sort(key=lambda x: x["importance"], reverse=True)
     
     onnx_size_bytes = 0
     if os.path.exists(MODEL_OUT_PATH):
@@ -222,8 +287,11 @@ def save_metrics_json(pipeline, df, X_train, y_train, y_train_pred, X_val, y_val
                 "max_depth": 6,
                 "min_samples_leaf": 15,
                 "class_weight": "balanced"
-            }
+            },
+            "training_time_seconds": float(elapsed_time)
         },
+        "feature_importances": feat_imp,
+
         "forest_details": {
             "n_estimators": int(classifier.n_estimators),
             "max_depth_limit": int(classifier.max_depth) if classifier.max_depth else None,

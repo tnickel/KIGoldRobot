@@ -6,8 +6,75 @@
       "max_depth": 6,
       "min_samples_leaf": 15,
       "class_weight": "balanced"
-    }
+    },
+    "training_time_seconds": 0.4097940921783447
   },
+  "feature_importances": [
+    {
+      "name": "tick_volume_ratio",
+      "importance": 0.39135725903022167
+    },
+    {
+      "name": "cos_hour",
+      "importance": 0.22237907441062837
+    },
+    {
+      "name": "sin_hour",
+      "importance": 0.059684072790278965
+    },
+    {
+      "name": "lower_shadow_norm",
+      "importance": 0.05301816084616353
+    },
+    {
+      "name": "upper_shadow_norm",
+      "importance": 0.04938138206615854
+    },
+    {
+      "name": "body_size_norm",
+      "importance": 0.04497980356599496
+    },
+    {
+      "name": "atr",
+      "importance": 0.02972311943168834
+    },
+    {
+      "name": "dist_ema20",
+      "importance": 0.02251334643205351
+    },
+    {
+      "name": "vix_close",
+      "importance": 0.020793451976723578
+    },
+    {
+      "name": "macd_diff_norm",
+      "importance": 0.02039641017451263
+    },
+    {
+      "name": "rsi",
+      "importance": 0.02011621236419524
+    },
+    {
+      "name": "dist_sma200",
+      "importance": 0.01995169149868656
+    },
+    {
+      "name": "dxy_dist_ema20",
+      "importance": 0.01953957190646492
+    },
+    {
+      "name": "dist_ema50",
+      "importance": 0.015879706602606448
+    },
+    {
+      "name": "sin_day",
+      "importance": 0.006625775698189937
+    },
+    {
+      "name": "cos_day",
+      "importance": 0.003660961205432812
+    }
+  ],
   "forest_details": {
     "n_estimators": 150,
     "max_depth_limit": 6,
