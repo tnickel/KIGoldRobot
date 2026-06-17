@@ -202,6 +202,22 @@ def print_forest_summary(pipeline, elapsed_time):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Phase 2: Machine Learning & ONNX Export")
+    parser.add_argument("--n-estimators", type=int, default=150, help="Number of trees in forest")
+    parser.add_argument("--max-depth", type=int, default=6, help="Max depth limit of trees")
+    parser.add_argument("--min-samples-leaf", type=int, default=15, help="Min samples leaf")
+    parser.add_argument("--class-weight", type=str, default="balanced", help="Class weight mode (balanced or none)")
+    args, unknown = parser.parse_known_args() # Use parse_known_args to ignore GUI-specific arguments if called from GUI
+    
+    class_weight = None if args.class_weight.lower() == "none" else args.class_weight
+    
+    print(f"\nTraining model with parameters:")
+    print(f"  n_estimators      : {args.n_estimators}")
+    print(f"  max_depth         : {args.max_depth}")
+    print(f"  min_samples_leaf  : {args.min_samples_leaf}")
+    print(f"  class_weight      : {class_weight}")
+    
     # 1. Load and Split Data
     df = load_data()
     X_train, y_train, X_val, y_val, X_test, y_test = split_data(df)
@@ -212,10 +228,10 @@ def main():
     pipeline = Pipeline([
         ('scaler', StandardScaler()),
         ('classifier', RandomForestClassifier(
-            n_estimators=150,
-            max_depth=6,
-            min_samples_leaf=15,
-            class_weight='balanced',
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+            min_samples_leaf=args.min_samples_leaf,
+            class_weight=class_weight,
             random_state=42,
             n_jobs=-1
         ))
@@ -250,6 +266,7 @@ def main():
 
     
     print("\nPhase 2 execution finished.")
+
 
 
 

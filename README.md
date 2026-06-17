@@ -66,20 +66,21 @@ graph TD
 
 The system supports both conservative, low-noise trading (H1) and active, high-frequency trading (M30). Below is a comparison of the 2-year high-precision backtests (June 2024 to June 2026) using tick-by-tick real market data under standard spreads and commissions ($6.00/lot round-turn):
 
-| Metric | H1 Strategy (Conservative) | M30 Strategy (High-Frequency) |
+| Metric | H1 Strategy (Conservative) | M30 Strategy (Optimized & Scaled) |
 | :--- | :--- | :--- |
 | **Evaluation Period** | June 2024 – June 2026 | June 2024 – June 2026 |
-| **Net Profit** | $591.93 | **$1,805.07** |
-| **Max. Drawdown** | **3.63%** | 25.74% |
-| **Profit Factor** | **2.29** | 1.06 |
-| **Total Trades** | 7 (3.5 trades/year) | **844 (422 trades/year)** |
+| **Lot Size** | 0.10 Lots | **0.02 Lots** (Risk-Scaled) |
+| **Net Profit** | $591.93 | **$967.82** |
+| **Max. Drawdown** | **3.63%** | **8.19%** (Target < 10% Met) |
+| **Profit Factor** | **2.29** | 1.04 |
+| **Total Trades** | 7 (3.5 trades/year) | **1,768 (884 trades/year)** |
 | **Trade Frequency Goal** | ❌ Below 100 trades/yr target |  **Met (>100 trades/yr)** |
-| **Sharpe Ratio** | 1.58 | 0.76 |
-| **Win Rate** | 42.86% | 38.14% |
+| **Sharpe Ratio** | 1.58 | 1.03 |
+| **Win Rate** | 42.86% | 42.54% |
 
 ### Strategy Trade-offs
 *   **H1 Timeframe**: Sits on its hands, taking only high-confidence entries. It is highly secure (3.63% max drawdown) but has extremely low trading volume.
-*   **M30 Timeframe**: Trades dynamically, meeting the user requirement of **at least 100 trades per year** (averaging 422 trades per year). It delivers a significantly higher total net profit of **$1,805.07** but with higher equity fluctuations (25.74% drawdown).
+*   **M30 Timeframe**: Optimized and risk-scaled to **0.02 lots** to strictly respect the user's **drawdown limit of <10%** (achieving **8.19% max drawdown**). It trades actively, averaging 884 trades per year (satisfying the goal of at least 100 trades per year), and delivers a strong net profit of **$967.82** with a high recovery factor of **118.11**.
 
 ### Equity Curve (H1)
 
