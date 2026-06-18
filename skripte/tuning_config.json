@@ -1,0 +1,78 @@
+{
+  "output_directory": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\backtest_reports",
+  "settings": {
+    "from_date": "2024-06-10",
+    "to_date": "2026-06-10",
+    "deposit": 10000,
+    "currency": "USD",
+    "leverage": "1:100",
+    "model": 1,
+    "use_virtual_desktop": true,
+    "auto_kill_mt5": true
+  },
+  "runs": [
+    {
+      "expert_name": "Base_No_ONNX",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_base.set"
+    },
+    {
+      "expert_name": "ONNX_50",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_50.set"
+    },
+    {
+      "expert_name": "ONNX_52",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_52.set"
+    },
+    {
+      "expert_name": "ONNX_54",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_54.set"
+    },
+    {
+      "expert_name": "ONNX_56",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_56.set"
+    },
+    {
+      "expert_name": "ONNX_57",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_57.set"
+    },
+    {
+      "expert_name": "ONNX_60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_60.set"
+    },
+    {
+      "expert_name": "ONNX_62",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_62.set"
+    },
+    {
+      "expert_name": "ONNX_64",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_onnx_64.set"
+    }
+  ]
+}

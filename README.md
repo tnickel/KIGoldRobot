@@ -1,125 +1,102 @@
-# KIGoldRobot: ONNX Native Machine Learning Trading Pipeline for MT5
+# ToTheMoonKI: ToTheMoonKI AUDUSD M5 Gatekeeper ML Trading Pipeline for MT5
 
-KIGoldRobot is an end-to-end algorithmic trading pipeline for the **XAUUSD (Gold)** market on the **H1 Timeframe** in MetaTrader 5 (MT5). It implements a robust machine learning classification workflow in Python, exports the trained pipeline to ONNX format, and executes it natively in a lightweight MQL5 Expert Advisor.
+**ToTheMoonKI** is a machine learning algorithmic trading pipeline designed to optimize grid/martingale trading strategies on **AUDUSD** (using the **M5** entry timeframe and **H1** structural filters) within MetaTrader 5 (MT5). 
+
+It implements a Python-based data engineering and ensemble learning workflow to train a **Gatekeeper Model** (Random Forest Classifier). This model is compiled natively into the **ToTheMoonKI** MQL5 Expert Advisor via ONNX, filtering out high-risk trades to prevent account drawdown.
 
 ---
 
 ## 📐 Architecture & Workflow
 
-The system architecture is split into four distinct phases, ensuring clean separation between heavy data/model operations in Python and low-latency, self-contained trade execution in MT5.
+The architecture splits heavy model training in Python from low-latency trade execution in MetaTrader 5. Rather than predicting raw direction, the machine learning model acts as a **Gatekeeper** that predicts the success probability of a reversion grid entry.
 
 ```mermaid
 graph TD
-    A[MT5 Terminal] -->|01_data_fetch.py| B[Pandas / Feature Engineering]
-    B -->|xauusd_h1_features.csv| C[02_train_model.py]
-    C -->|RandomForest Classifier| D[ONNX Pipeline Export]
-    D -->|model.onnx Resource| E[XAU_ONNX_Bot.mq5 EA]
-    E -->|03_optimize_ea.py| F[Genetic Walk-Forward Optimization]
-    F -->|optimized_xauusd_best.set| G[Production Deployment]
+    A[MT5 Terminal] -->|01_extract_grid_data.py| B[Pandas / Grid Simulation]
+    B -->|grid_entries.csv| C[02_train_gatekeeper.py]
+    C -->|RandomForest Classifier| D[ONNX Export & Resource]
+    D -->|gatekeeper.onnx Resource| E[ToTheMoonKI.mq5 EA]
+    E -->|03_validate_gatekeeper.py| F[Java MT5 Backtest Validation]
+    F -->|validation_report.md| G[Tuned Production Robot]
 ```
 
 ---
 
 ## 🚀 Key Project Phases
 
-### Phase 1: Data Engineering (`01_data_fetch.py`)
-- **MT5 Python Connection**: Downloads historical H1 data for the last 5 years from the MT5 API.
-- **ATR-Normalized Features**: Standardizes indicators by the Average True Range (ATR) to ensure scale-invariance across different price regimes (e.g., Gold varying from \$1,200 to \$2,400+).
-  - Volatility-normalized EMAs (20, 50, 200)
-  - Volatility-normalized MACD difference
-  - RSI (14)
-  - Volatility-normalized Candlestick Shadows & Body sizes
-  - Real Volume ratio relative to rolling averages
-- **Dynamic Classification Target**: Defines targets based on the next H1 close movement. Targets are labeled as BUY (`1`), SELL (`-1`), or HOLD (`0`) if the move exceeds $0.5 \times ATR$.
+### Phase 1: Grid Data Extraction & Simulation (`skripte/01_extract_grid_data.py`)
+- **MT5 Python Connection**: Downloads historical data across multiple timeframes (M5, M15, H1, H4) from the MT5 terminal.
+- **Envelope Breakthrough Signals**: Tracks price action on M5 against H1 Envelope channels. A breakout of the H1 channel forms a candidate trade.
+- **Fast Grid Outcome Simulation**: For every breakout signal, a vector-based grid simulator calculates the outcome:
+  - **Success (`1`)**: The grid reaches Take Profit (TP) within 120 bars using **at most 2 grid levels**, without breaching the drawdown limit.
+  - **Failure (`0`)**: The trade requires 3 or more martingale steps, times out, or hits the drawdown threshold.
+- **Feature Engineering**: Computes 23 indicators aligned to M5 candles:
+  - Multi-timeframe RSI (`rsi_m5`, `rsi_m15`, `rsi_h1`) & Stochastic (`stoch_k_m15`, `stoch_d_m15`).
+  - Kaufman Efficiency Ratio (`efficiency_ratio_h1`) & ADX (`adx_h1`).
+  - Volatility ratios (ATR relative to its rolling averages) & Speads.
+  - Distance metrics (`dist_ema250_h4` and envelope distances).
 
-### Phase 2: Model Training & ONNX Export (`02_train_model.py`)
-- **Chronological Split**: Split dataset chronologically into Train (70%), Validation (15%), and Test (15%) to prevent future data leakage.
-- **Trained Pipeline**: Combines a `StandardScaler` and a `RandomForestClassifier` into a single scikit-learn `Pipeline`.
-- **ZipMap-Free ONNX Export**: Converts the scikit-learn pipeline to ONNX with `ZipMap` disabled. This ensures the output is generated as a raw float tensor `[batch_size, 3]`, which maps natively to MT5's matrix structures.
+### Phase 2: Ensemble Learning & ONNX Export (`skripte/02_train_gatekeeper.py`)
+- **Chronological Split**: Splitting training data chronologically at `2025-06-01` to prevent look-ahead bias and time-series data leakage.
+- **Random Forest Classifier**: Trains an ensemble of 100 decision trees (`max_depth=6`, `min_samples_leaf=50`) to predict the success vs failure labels.
+- **ZipMap-Free ONNX Export**: Converts the trained model to `gatekeeper.onnx` with `ZipMap` disabled to output float probability tensors (`[BatchSize, 2]`) directly readable by MQL5.
+- **Metrics Export**: Writes structural and quality metrics to `data/model_metrics.json` for dashboard visualization.
 
-### Phase 3: Expert Advisor (`XAU_ONNX_Bot.mq5`)
-- **Embeds ONNX as Resource**: The `.onnx` model is compiled directly into the `.ex5` executable via the `#resource` directive, creating a self-contained, lightweight binary.
-- **IsNewBar H1 Filter**: Prevents intra-bar churn by executing prediction logic exactly once per stündliche candle boundary.
-- **Execution Filters**: Checks current spreads and restricts trading if the spread exceeds user-defined limits.
-- **Risk & Cost Control**: Stop Loss (SL) and Take Profit (TP) are ATR-adjusted and padded to account for raw spreads and fixed lot commissions (e.g., \$6 round-turn commission per lot).
+### Phase 3: MQL5 Expert Advisor (`mql5_ea/ToTheMoonKI.mq5`)
+- **Embedded ONNX**: Compiles the model directly inside the EA using `#resource "\\exports\\gatekeeper.onnx"`.
+- **Zero-Latency Inference**: When an envelope breakthrough is triggered on the M5 bar close, the EA passes the current 23-feature vector to the ONNX session locally.
+- **Decision Engine**: If the probability of Class 1 (Safe Reversion) exceeds the user parameter `Inp_Min_ONNX_Probability` (default `0.65`), the trade is approved. Otherwise, the entry is blocked.
 
-### Phase 4: Walk-Forward Automation (`03_optimize_ea.py`)
-- Runs genetic search optimizations in the MT5 Strategy Tester using the fast 1-minute OHLC model.
-- Validates the top candidates against out-of-sample data.
-- Runs high-precision verification on "Every tick based on real ticks".
-- Saves best-performing presets directly to `settings/optimized_xauusd_best.set`.
+### Phase 4: Walk-Forward Validation & Optimization
+- **Java Backtester integration (`skripte/03_validate_gatekeeper.py`)**: Runs parallel backtests using a Java command-line wrapper around the MT5 tester, comparing the baseline EA against the ONNX Gatekeeper model.
+- **Tuning Scripts**:
+  - `skripte/04_tune_threshold.py`: Searches for the optimal ONNX probability threshold.
+  - `skripte/05_optimize_grid.py` to `08_low_dd_optimize.py`: Perform deep genetic parameter search to optimize grid steps, multipliers, and drawdown constraints.
 
-### Phase 5: Graphical Pipeline Interface (`04_pipeline_gui.py`)
-- **Interactive Dashboard**: A desktop application built with Tkinter, featuring a modern dark-theme layout.
-- **Modell-Metriken**: Displays real-time training, validation, and test accuracies alongside classification reports.
-- **Feature-Visualisierung**: Lists the 16 features mapping in the ONNX model input vector, ranked dynamically by mathematical feature importance.
-- **Konfusionsmatrix-Heatmap**: Draws an interactive heatmap grid showing model prediction hits and misses.
-- **Live-Konsole**: Launches model retraining asynchronously in the background, capturing logs live to a scrolling console screen without freezing the GUI.
-
-#### Pipeline GUI Dashboard
-![Pipeline GUI Dashboard Feature Importances](./doc/pipeline_gui_feature_importances.png)
-
+### Phase 5: Graphical Cockpit Dashboard (`skripte/09_audusd_pipeline_gui.py`)
+- **GUI Dashboard**: Modern Tkinter application launched via `start_graphical_learner.bat`.
+- **Visuals**: Displays training/testing accuracies, ranks the 23 features by Gini importance, and plots an interactive confusion matrix heatmap.
+- **Live Retraining**: Asynchronously triggers model training with a scrolling console log.
 
 ---
 
-## 📈 Performance & Verification Results (H1 vs. M30)
+## 📈 Backtest Validation Highlights (AUDUSD M5)
 
-The system supports both conservative, low-noise trading (H1) and active, high-frequency trading (M30). Below is a comparison of the 2-year high-precision backtests (June 2024 to June 2026) using tick-by-tick real market data under standard spreads and commissions ($6.00/lot round-turn):
+A two-year comparative backtest (June 2024 – June 2026) demonstrates the impact of using the ONNX Gatekeeper:
 
-| Metric | H1 Strategy (Conservative) | M30 Strategy (Optimized & Scaled) |
-| :--- | :--- | :--- |
-| **Evaluation Period** | June 2024 – June 2026 | June 2024 – June 2026 |
-| **Lot Size** | 0.10 Lots | **0.02 Lots** (Risk-Scaled) |
-| **Net Profit** | $591.93 | **$967.82** |
-| **Max. Drawdown** | **3.63%** | **8.19%** (Target < 10% Met) |
-| **Profit Factor** | **2.29** | 1.04 |
-| **Total Trades** | 7 (3.5 trades/year) | **1,768 (884 trades/year)** |
-| **Trade Frequency Goal** | ❌ Below 100 trades/yr target |  **Met (>100 trades/yr)** |
-| **Sharpe Ratio** | 1.58 | 1.03 |
-| **Win Rate** | 42.86% | 42.54% |
-
-### Strategy Trade-offs
-*   **H1 Timeframe**: Sits on its hands, taking only high-confidence entries. It is highly secure (3.63% max drawdown) but has extremely low trading volume.
-*   **M30 Timeframe**: Optimized and risk-scaled to **0.02 lots** to strictly respect the user's **drawdown limit of <10%** (achieving **8.19% max drawdown**). It trades actively, averaging 884 trades per year (satisfying the goal of at least 100 trades per year), and delivers a strong net profit of **$967.82** with a high recovery factor of **118.11**.
-
-### Equity Curve (H1)
-
-![H1 Equity Curve](./doc/BacktestReport.png)
+| Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Min Prob = 0.65) |
+| :--- | :---: | :---: |
+| **Max Drawdown** | High | **Significantly Reduced** |
+| **Recovery Factor** | Standard | **Improved** |
+| **Trade Quality** | Unfiltered | **Filtered (Class 1 Reversions only)** |
 
 ---
 
 ## ⚙️ How to Run
 
 ### Requirements
-- MetaTrader 5 Terminal installed
-- Python 3.10+ with packages: `MetaTrader5`, `pandas`, `numpy`, `scikit-learn`, `onnx`, `skl2onnx`
+- MetaTrader 5 Terminal installed with history for AUDUSD (M5, M15, H1, H4).
+- Python 3.10+ with `pandas`, `numpy`, `scikit-learn`, `onnx`, `skl2onnx`, and `onnxruntime`.
 
 ### Steps
-1. **Fetch Data**:
-   Ensure MT5 is running, then execute (default is M15, use `--timeframe M30` for our optimized active strategy):
+1. **Extract Training Data**:
+   Ensure MT5 is running, then execute:
    ```bash
-   python XAUUSD_ONNX_Project/python_scripts/01_data_fetch.py --timeframe M30
+   python skripte/01_extract_grid_data.py
    ```
-2. **Train Model & Export ONNX**:
+2. **Train Gatekeeper Model**:
    ```bash
-   python XAUUSD_ONNX_Project/python_scripts/02_train_model.py
+   python skripte/02_train_gatekeeper.py
    ```
-3. **Compile the Expert Advisor**:
-   Compile `XAU_ONNX_Bot.mq5` via MetaEditor using portable flags to target your MT5 installation:
-   ```powershell
-   & "C:\Forex\Mt5\TickmillLifeMql5\metaeditor64.exe" /portable /compile:"D:\AntiGravitySoftware\GitWorkspace\KIGoldRobot\XAUUSD_ONNX_Project\mql5_ea\XAU_ONNX_Bot.mq5" /log:"D:\AntiGravitySoftware\GitWorkspace\KIGoldRobot\XAUUSD_ONNX_Project\mql5_ea\compile_output.log"
-   ```
-4. **Run Parameter Optimization**:
-   Specify the timeframe to target:
+3. **Compile EA**:
+   Compile [ToTheMoonKI.mq5](file:///d:/AntiGravitySoftware/GitWorkspace/ToTheMoonKI/mql5_ea/ToTheMoonKI.mq5) via MetaEditor or using command line flags.
+4. **Compare Performance**:
+   Run the Java-based validation script to see the performance improvement:
    ```bash
-   python XAUUSD_ONNX_Project/python_scripts/03_optimize_ea.py --timeframe M30
+   python skripte/03_validate_gatekeeper.py
    ```
-5. **Load Preset**:
-   Load `settings/optimized_xauusd_best.set` in your MT5 Strategy Tester parameters and run the bot.
-6. **Launch Pipeline Dashboard GUI**:
-   Start the interactive dark-themed GUI dashboard to check the model quality, feature shapes, confusion matrix, or retrain the model live:
+5. **Launch Cockpit**:
+   Run the batch script to launch the GUI console:
    ```bash
-   python XAUUSD_ONNX_Project/python_scripts/04_pipeline_gui.py
+   start_graphical_learner.bat
    ```
-
-

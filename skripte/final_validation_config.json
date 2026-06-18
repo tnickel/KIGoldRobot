@@ -1,0 +1,29 @@
+{
+  "output_directory": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\backtest_reports",
+  "settings": {
+    "from_date": "2024-06-10",
+    "to_date": "2026-06-10",
+    "deposit": 10000,
+    "currency": "USD",
+    "leverage": "1:100",
+    "model": 1,
+    "use_virtual_desktop": true,
+    "auto_kill_mt5": true
+  },
+  "runs": [
+    {
+      "expert_name": "ToTheMoonKI_Base",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_base.set"
+    },
+    {
+      "expert_name": "ToTheMoonKI_ONNX_Optimized",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\optimized_audusd_best.set"
+    }
+  ]
+}

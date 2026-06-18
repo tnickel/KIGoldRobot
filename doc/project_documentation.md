@@ -1,13 +1,13 @@
-# KIGoldRobot: Comprehensive Project Brief & AI Marketing Blueprint
+# ToTheMoonKI: ToTheMoonKI AUDUSD M5 Gatekeeper brief & AI Marketing Blueprint
 
-This documentation serves as a structured project brief detailing the **KIGoldRobot** machine learning trading pipeline. It is optimized to be read by humans and easily parsed by other AI agents to write blog posts, landing page copies, or promotional content for the **KI-Software-Schmiede** homepage.
+This documentation serves as a structured project brief detailing the **ToTheMoonKI** machine learning trading pipeline. It is optimized to be read by humans and easily parsed by other AI agents to write blog posts, landing page copies, or promotional content for the **KI-Software-Schmiede** homepage.
 
 ---
 
 ## 🔗 Repository & Project Identity
-*   **Project Name:** KIGoldRobot (Gold Algo-Trading System)
-*   **GitHub Repository:** [https://github.com/tnickel/KIGoldRobot](https://github.com/tnickel/KIGoldRobot)
-*   **Target Market:** XAUUSD (Gold), H1 Timeframe
+*   **Project Name:** ToTheMoonKI (ToTheMoonKI AUDUSD Gatekeeper System)
+*   **GitHub Repository:** [https://github.com/tnickel/ToTheMoonKI](https://github.com/tnickel/ToTheMoonKI)
+*   **Target Market:** AUDUSD, M5 Timeframe (Entries) with H1 Envelope Channels (Structure)
 *   **Architecture Pattern:** Python Machine Learning Pipeline + Native ONNX MetaTrader 5 Expert Advisor
 
 ---
@@ -16,74 +16,55 @@ This documentation serves as a structured project brief detailing the **KIGoldRo
 
 | Layer | Technology | Key Purpose |
 | :--- | :--- | :--- |
-| **Data Extraction** | Python 3.12, `MetaTrader5` Package | High-speed, direct connection to the terminal database to stream historical price records. |
-| **Data Processing** | Python `pandas`, `numpy` | Custom feature engineering, mathematical indicators, and dynamic volatility scaling. |
-| **Machine Learning** | Python `scikit-learn` | Standard preprocessing (`StandardScaler`) and ensemble learning classifier (`RandomForestClassifier`). |
-| **Model Serialization**| Python `skl2onnx`, `onnx` | Converts the full scikit-learn preprocessing and model pipeline into a single, optimized `.onnx` graph (ZipMap disabled). |
-| **Inference & Strategy**| MQL5 (Strict Mode) | Custom Expert Advisor (`XAU_ONNX_Bot.mq5`) that compiles the model natively as a resource for local execution. |
-| **Backtest Automation** | Java SE, CLI wrapper, MT5 Tester | Auto-configures and runs genetic optimizations and walk-forward verification via cmdline. |
-| **Pipeline UI** | Python `tkinter`, `ttk` | Modern, dark-themed GUI dashboard visualizing model metrics, feature importances, confusion matrix, and training logs. |
+| **Data Extraction** | Python 3.12, `MetaTrader5` Package | Connection to MT5 terminal database to download multi-timeframe price history (M5, M15, H1, H4). |
+| **Data Processing** | Python `pandas`, `numpy` | Feature engineering, time encodings, indicator alignment, and vector-based grid trading outcome simulation. |
+| **Machine Learning** | Python `scikit-learn` | RandomForestClassifier trained with chronological validation to classify high-risk vs. safe grid entry points. |
+| **Model Serialization**| Python `skl2onnx`, `onnx` | Converts the trained Random Forest model into a single, optimized `.onnx` graph (ZipMap disabled). |
+| **Inference & Strategy**| MQL5 (Strict Mode) | Custom Expert Advisor (`ToTheMoonKI.mq5`) that compiles the model natively as a resource for zero-latency local execution. |
+| **Backtest Automation** | Java SE, CLI wrapper, MT5 Tester | Auto-configures and runs backtest validation and genetic optimization runs on historical data. |
+| **Pipeline UI** | Python `tkinter`, `ttk` | Modern Tkinter dashboard (`09_audusd_pipeline_gui.py`) visualizing model performance, feature importances, and live training console. |
 
 ---
 
 ## 📐 Development Methodology & Step-by-Step Execution
 
-We built the system in a systematic, five-phase engineering sprint:
+### Phase 1: M5 Entry & H1 Envelope Channels
+*   **The Reversion Signal:** Candidate entry signals are triggered on the M5 timeframe when the close of the previous candle breaks outside of the H1 Envelope channels (upper envelope for SELL, lower envelope for BUY).
+*   **Grid Reversion Strategy:** Once triggered, the bot utilizes a martingale-like grid (up to 3 levels: lot sizes 1.0, 1.38, 1.38^2) to close the basket in profit.
 
-### Phase 1: Python-Driven Volatility Scaling (ATR Normalization)
-*   **Why absolute prices fail:** Over 5 years, Gold moved from \$1,200 to \$2,400. A standard absolute dollar change does not mean the same thing in different price regimes.
-*   **The solution:** All distance features (distance to Moving Averages, MACD lines, candlestick body sizes, and shadows) are **normalized by the current Average True Range (ATR)**. This renders all indicators scale-invariant and regime-stable.
-*   **Target Creation:** The target class (BUY, SELL, HOLD) is calculated dynamically. A trade is only triggered if the next candle moves by more than $0.5 \times \text{ATR}$ points in either direction.
+### Phase 2: Python-Driven Grid Simulation & Labeling
+*   **Why filtering is necessary:** During strong trends, breakouts can keep moving against the position, causing the grid to overextend, requiring deep drawdown or hitting the account stop-out.
+*   **Outcome Simulation:** For each potential envelope breakout, a simulator checks the outcome over the next 120 bars:
+  - **Class 1 (Safe/Success):** Reaches Take Profit using $\le 2$ grid steps, without hitting the drawdown limit (300 points).
+  - **Class 0 (Dangerous/Failure):** Requires 3 or more grid levels, times out, or hits the drawdown threshold.
+*   **The Target:** The model learns a binary target (Class 1 vs Class 0) to classify whether the market conditions at breakout represent a safe entry or a dangerous overextension threat.
 
-### Phase 2: Ensemble Learning & Chronological Validation
-*   **Time-Series splitting:** Standard cross-validation causes data leakage (predicting past prices using future information). We implemented a strict chronological split: **70% Training, 15% Validation, and 15% Testing**.
-*   **Precision Focus:** In trading, overall accuracy is a vanity metric. We trained a `RandomForestClassifier` optimized for **Precision** and **F1-score** on target classes to minimize false signals.
+### Phase 3: Ensemble Learning & Chronological Validation
+*   **Time-Series Validation:** Data is split chronologically at `2025-06-01` into Train and Test sets. This prevents future data leakage and ensures robustness against regime changes.
+*   **Precision Focus:** We train a `RandomForestClassifier` with balanced class weights to maximize precision on Class 1 (reducing false signals).
 
-### Phase 3: Zero-Latency ONNX Native Integration
-*   **Native Resource:** The `.onnx` pipeline file containing the scaling parameters and the Random Forest model is embedded directly into the `.ex5` binary using the `#resource` compiler directive.
-*   **No API Sockets:** Traditional AI EAs communicate with Python via sockets or Web APIs, introducing latency and security risks. KIGoldRobot performs inference **locally, inside the MT5 sandbox**, in less than 1 millisecond.
-*   **ZipMap Pruning:** We disabled ZipMap in ONNX. This simplifies outputs into standard float tensors of class probabilities, fully compatible with MQL5's native ONNX API.
-
-### Phase 4: Walk-Forward Genetic Optimization
-*   We created a script (`03_optimize_ea.py`) that uses a Java CLI tool to perform walk-forward parameter selection.
-*   The script runs genetic optimization on the In-Sample period, filters the top 5 candidates against out-of-sample data, and verifies the best setup using high-precision, tick-by-tick MT5 Strategy Tester execution.
-
-### Phase 5: Graphical Pipeline Interface & Feature Ranking
-*   We developed an interactive, dark-themed Tkinter GUI (`04_pipeline_gui.py`) that acts as a cockpit for the machine learning pipeline.
-*   It displays train/val/test accuracies, details the ensemble complexity (tree counts, depths, and decision nodes), renders an interactive actual-vs-predicted confusion matrix heatmap, and visualizes the dynamically computed **feature importances**.
-*   It supports asynchronous model retraining directly from the interface, showing real-time logs in a dedicated scrolling console.
-
-![Pipeline GUI Dashboard Feature Importances](./pipeline_gui_feature_importances.png)
-
+### Phase 4: Zero-Latency ONNX Native Integration
+*   **Native Resource:** The `.onnx` gatekeeper model is compiled directly into the MT5 EA binary via the `#resource` compiler directive.
+*   **Sandbox Inference:** The EA calculates the 23-feature vector on every new M5 bar and calls the local ONNX session. If the Class 1 probability exceeds the threshold parameter (e.g. `0.65`), the trade is approved. Otherwise, it is blocked.
+*   **ZipMap Pruning:** Disabling ZipMap allows exporting output probabilities as a clean float matrix `[BatchSize, 2]` which is fully compatible with MT5's matrix structures.
 
 ---
 
-## 📈 Backtest Performance Highlights (June 2024 – June 2026)
+## 📈 Performance Highlights (AUDUSD M5)
 
-The system supports both conservative, low-noise trading (H1) and active, high-frequency trading (M30). Below are the performance results compiled under standard spread conditions and round-turn commissions ($6.00/lot):
+The integration of the ONNX Gatekeeper provides a significant improvement in risk-adjusted returns by filtering out high-risk entries:
 
-| Metric | H1 Strategy (Conservative) | M30 Strategy (Optimized & Scaled) |
-| :--- | :--- | :--- |
-| **Lot Size** | 0.10 Lots | **0.02 Lots** (Risk-Scaled) |
-| **Net Profit** | $591.93 | **$967.82** |
-| **Max. Drawdown** | **3.63%** | **8.19%** (Target < 10% Met) |
-| **Profit Factor** | **2.29** | 1.04 |
-| **Total Trades** | 7 (3.5 trades/year) | **1,768 (884 trades/year)** |
-| **Trade Frequency Goal** | ❌ Under target |  **Met (>100 trades/year)** |
-| **Sharpe Ratio** | 1.58 | 1.03 |
-| **Win Rate** | 42.86% | 42.54% |
-
-*   **H1 Timeframe**: Focuses on maximum safety. It sits on its hands, taking only high-confidence entries, resulting in extremely low drawdown (3.63%) and a high profit factor (2.29).
-*   **M30 Timeframe**: Optimized and risk-scaled to **0.02 lots** to strictly respect the user's **drawdown limit of <10%** (achieving **8.19% max drawdown**). It trades actively to achieve consistent returns, averaging 884 trades per year (satisfying the goal of at least 100 trades per year). It delivers a net profit of **$967.82** with a recovery factor of **118.11**.
-
+| Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Filtered) |
+| :--- | :---: | :---: |
+| **Trade Quality** | Unfiltered | **Filtered (Class 1 Reversions Only)** |
+| **Max Drawdown** | Standard | **Significantly Reduced** |
+| **Profit Factor / RF** | Base | **Improved** |
 
 ---
 
 ## 💡 Top Marketing Hooks for Homepage Integration (For AI Copywriter)
 
-Here are the key unique selling points (USPs) of **KIGoldRobot** that can be utilized to write blog posts or website sections:
-
-1.  **"No-Lag Native AI Execution"**: Emphasize that this bot does not require API keys, external servers, or Python sockets to run in real-time. The AI is compiled *directly inside* the MetaTrader 5 bot, executing local ONNX logic instantly.
-2.  **"Volatility-Adaptive Intelligence"**: Unlike traditional bots with fixed point targets (e.g., 50 points stop loss), this bot dynamically adjusts its targets and scales its indicator features based on the market's volatility (ATR). It trades effectively whether Gold is quiet or extremely volatile.
-3.  **"AI Precision over Vanity Accuracy"**: The AI is specifically trained to ignore the "noise" (represented by class 0 / HOLD). It sits on its hands until the probability threshold is exceeded, leading to an extremely high Profit Factor (2.29) and a tiny drawdown (3.63%).
-4.  **"Fully Automated Walk-Forward Optimizations"**: Integrates a complete Python-to-Java-to-MT5 workflow that auto-validates model parameters against chronological forward test samples, keeping the robot robust against market regime changes.
+1.  **"On-Device AI Execution"**: No external servers, API keys, or web sockets. The Random Forest model executes locally inside the MetaTrader 5 terminal in less than 1 millisecond.
+2.  **"Smart Risk Filtering (ONNX Gatekeeper)"**: Instead of blindly opening grid positions, the EA queries the AI. The AI evaluates 23 indicators across multiple timeframes to determine if the breakout is a safe reversion or a dangerous runaway trend.
+3.  **"Scale-Invariant Feature Engineering"**: Distances, candle shadows, and indicator spaces are scaled by Average True Range (ATR) and volatility ratios, making the model highly adaptable to changing volatility regimes.
+4.  **"Precision-Tuned Model Structure"**: Chronological split and precision optimization ensure that the model behaves conservatively, preserving capital by avoiding deep martingale overextensions.

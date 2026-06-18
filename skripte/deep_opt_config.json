@@ -1,0 +1,267 @@
+{
+  "output_directory": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\backtest_reports",
+  "settings": {
+    "from_date": "2024-06-10",
+    "to_date": "2026-06-10",
+    "deposit": 10000,
+    "currency": "USD",
+    "leverage": "1:100",
+    "model": 1,
+    "use_virtual_desktop": true,
+    "auto_kill_mt5": true
+  },
+  "runs": [
+    {
+      "expert_name": "P48_S750_L134_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S750_L134_T60.set"
+    },
+    {
+      "expert_name": "P48_S750_L134_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S750_L134_T80.set"
+    },
+    {
+      "expert_name": "P48_S750_L134_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S750_L134_T100.set"
+    },
+    {
+      "expert_name": "P48_S750_L140_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S750_L140_T60.set"
+    },
+    {
+      "expert_name": "P48_S750_L140_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S750_L140_T80.set"
+    },
+    {
+      "expert_name": "P48_S750_L140_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S750_L140_T100.set"
+    },
+    {
+      "expert_name": "P48_S850_L134_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S850_L134_T60.set"
+    },
+    {
+      "expert_name": "P48_S850_L134_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S850_L134_T80.set"
+    },
+    {
+      "expert_name": "P48_S850_L134_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S850_L134_T100.set"
+    },
+    {
+      "expert_name": "P48_S850_L140_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S850_L140_T60.set"
+    },
+    {
+      "expert_name": "P48_S850_L140_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S850_L140_T80.set"
+    },
+    {
+      "expert_name": "P48_S850_L140_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P48_S850_L140_T100.set"
+    },
+    {
+      "expert_name": "P50_S750_L134_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S750_L134_T60.set"
+    },
+    {
+      "expert_name": "P50_S750_L134_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S750_L134_T80.set"
+    },
+    {
+      "expert_name": "P50_S750_L134_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S750_L134_T100.set"
+    },
+    {
+      "expert_name": "P50_S750_L140_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S750_L140_T60.set"
+    },
+    {
+      "expert_name": "P50_S750_L140_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S750_L140_T80.set"
+    },
+    {
+      "expert_name": "P50_S750_L140_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S750_L140_T100.set"
+    },
+    {
+      "expert_name": "P50_S850_L134_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S850_L134_T60.set"
+    },
+    {
+      "expert_name": "P50_S850_L134_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S850_L134_T80.set"
+    },
+    {
+      "expert_name": "P50_S850_L134_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S850_L134_T100.set"
+    },
+    {
+      "expert_name": "P50_S850_L140_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S850_L140_T60.set"
+    },
+    {
+      "expert_name": "P50_S850_L140_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S850_L140_T80.set"
+    },
+    {
+      "expert_name": "P50_S850_L140_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P50_S850_L140_T100.set"
+    },
+    {
+      "expert_name": "P52_S750_L134_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S750_L134_T60.set"
+    },
+    {
+      "expert_name": "P52_S750_L134_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S750_L134_T80.set"
+    },
+    {
+      "expert_name": "P52_S750_L134_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S750_L134_T100.set"
+    },
+    {
+      "expert_name": "P52_S750_L140_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S750_L140_T60.set"
+    },
+    {
+      "expert_name": "P52_S750_L140_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S750_L140_T80.set"
+    },
+    {
+      "expert_name": "P52_S750_L140_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S750_L140_T100.set"
+    },
+    {
+      "expert_name": "P52_S850_L134_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S850_L134_T60.set"
+    },
+    {
+      "expert_name": "P52_S850_L134_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S850_L134_T80.set"
+    },
+    {
+      "expert_name": "P52_S850_L134_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S850_L134_T100.set"
+    },
+    {
+      "expert_name": "P52_S850_L140_T60",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S850_L140_T60.set"
+    },
+    {
+      "expert_name": "P52_S850_L140_T80",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S850_L140_T80.set"
+    },
+    {
+      "expert_name": "P52_S850_L140_T100",
+      "expert_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\mql5_ea\\ToTheMoonKI.ex5",
+      "symbol": "AUDUSD",
+      "period": "M5",
+      "set_file_path": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\settings\\temp_P52_S850_L140_T100.set"
+    }
+  ]
+}
