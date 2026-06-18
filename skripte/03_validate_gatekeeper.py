@@ -125,8 +125,8 @@ def main():
     config_base = {
         "output_directory": reports_dir,
         "settings": {
-            "from_date": "2024-06-10",
-            "to_date": "2026-06-10",
+            "from_date": "2026-01-01",
+            "to_date": "2026-06-15",
             "deposit": 10000,
             "currency": "USD",
             "leverage": "1:100",
@@ -163,8 +163,8 @@ def main():
     config_onnx = {
         "output_directory": reports_dir,
         "settings": {
-            "from_date": "2024-06-10",
-            "to_date": "2026-06-10",
+            "from_date": "2026-01-01",
+            "to_date": "2026-06-15",
             "deposit": 10000,
             "currency": "USD",
             "leverage": "1:100",
@@ -213,7 +213,7 @@ def main():
     m_onnx = get_metrics(onnx_run)
     
     print("\n==================================================================")
-    print("[ONNX] TO THE MOON EA - GATEKEEPER VALIDATION RESULTS (2-YEAR BACKTEST)")
+    print("[ONNX] TO THE MOON EA - GATEKEEPER VALIDATION RESULTS (OOS 2026 TEST)")
     print("==================================================================")
     print(f"{'Metric':<25} | {'Base (No ONNX)':<18} | {'ONNX Gatekeeper':<18} | {'Change':<10}")
     print("-" * 80)
@@ -227,7 +227,7 @@ def main():
     ]
     
     comparison_md = []
-    comparison_md.append("### TO THE MOON GATEKEEPER BACKTEST COMPARISON (2-YEAR)\n")
+    comparison_md.append("### TO THE MOON GATEKEEPER BACKTEST COMPARISON (OOS 2026)\n")
     comparison_md.append("| Metric | Base (No ONNX) | ONNX Gatekeeper | Change |")
     comparison_md.append("| :--- | :---: | :---: | :---: |")
     

@@ -115,8 +115,8 @@ def main():
     config = {
         "output_directory": reports_dir,
         "settings": {
-            "from_date": "2024-06-10",
-            "to_date": "2026-06-10",
+            "from_date": "2025-01-01",
+            "to_date": "2025-12-31",
             "deposit": 10000,
             "currency": "USD",
             "leverage": "1:100",
@@ -170,7 +170,7 @@ def main():
         raw_profit = r.get("profit", 0.0)
         raw_dd = r.get("drawdown", 0.0)
         trades = r.get("trades", 0)
-        trades_per_year = trades / 2.0
+        trades_per_year = trades / 1.0
         
         # Scale = 9.5 / raw_dd (target 9.5% DD)
         if raw_dd > 0:

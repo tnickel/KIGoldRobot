@@ -1,14 +1,14 @@
 {
   "output_directory": "D:\\AntiGravitySoftware\\GitWorkspace\\ToTheMoonKI\\backtest_reports",
   "settings": {
-    "from_date": "2024-06-10",
-    "to_date": "2026-06-10",
+    "from_date": "2026-01-01",
+    "to_date": "2026-06-15",
     "deposit": 10000,
     "currency": "USD",
     "leverage": "1:100",
     "model": 1,
     "use_virtual_desktop": false,
-    "auto_kill_mt5": false
+    "auto_kill_mt5": true
   },
   "runs": [
     {

@@ -113,8 +113,8 @@ def main():
     config = {
         "output_directory": reports_dir,
         "settings": {
-            "from_date": "2024-06-10",
-            "to_date": "2026-06-10",
+            "from_date": "2025-01-01",
+            "to_date": "2025-12-31",
             "deposit": 10000,
             "currency": "USD",
             "leverage": "1:100",
@@ -174,7 +174,7 @@ def main():
         raw_profit = r.get("profit", 0.0)
         raw_dd = r.get("drawdown", 0.0)
         trades = r.get("trades", 0)
-        trades_per_year = trades / 2.0
+        trades_per_year = trades / 1.0
         
         # Calculate scaling factor to bring DD strictly under 9.5%
         # Standard initial lot is 0.01 with Preset Factor 1200.

@@ -66,16 +66,16 @@ This documentation serves as a structured project brief detailing the **ToTheMoo
 
 ---
 
-## 📈 Performance Highlights (AUDUSD M5, 2-Year Backtest)
+## 📈 Performance Highlights (AUDUSD M5, OOS 2026 Test)
 
 The integration of the ONNX Gatekeeper provides a massive improvement in risk-adjusted performance by filtering out high-risk reversion entries:
 
 | Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Min Prob = 0.58) | Change |
 | :--- | :---: | :---: | :---: |
-| **Net Profit ($)** | $163191.88 | $14744.40 | -91.0% |
-| **Total Trades** | 549 | 96 | -82.5% |
-| **Max Drawdown (%)** | 35.90% | **9.78%** | **-72.8%** |
-| **Profit Factor** | 1.89 | **46.59** | **+2365.1%** |
+| **Net Profit ($)** | $18987.05 | $3419.82 | -82.0% |
+| **Total Trades** | 145 | 30 | -79.3% |
+| **Max Drawdown (%)** | 35.92% | **9.79%** | **-72.7%** |
+| **Profit Factor** | 2.35 | **45.54** | **+1837.9%** |
 | **Recovery Factor** | 0.00 | 0.00 | N/A |
 
 ### Backtest Visuals (Before vs After)
@@ -83,12 +83,12 @@ The integration of the ONNX Gatekeeper provides a massive improvement in risk-ad
 To visualize how effective the ONNX Gatekeeper is at eliminating dangerous overextensions, compare the two equity curves:
 
 #### 1. Baseline Strategy (Without ONNX Gatekeeper)
-*The baseline strategy enters every breakout blindly. During strong trends against the position, it suffers from severe drawdown phases (up to 35.90%):*
+*The baseline strategy enters every breakout blindly. During strong trends against the position, it suffers from severe drawdown phases (up to 35.92%):*
 
 ![Baseline Backtest Equity Curve](./screenshots/backtest_before_no_onnx.png)
 
 #### 2. Optimized Strategy (With ONNX Gatekeeper)
-*With the ONNX Gatekeeper active (probability threshold at 0.58), high-risk entries are successfully blocked. The equity curve is extremely smooth, resulting in a controlled drawdown of just 9.78% and a profit factor of 46.59:*
+*With the ONNX Gatekeeper active (probability threshold at 0.58), high-risk entries are successfully blocked. The equity curve is extremely smooth, resulting in a controlled drawdown of just 9.79% and a profit factor of 45.54:*
 
 ![ONNX Gatekeeper Backtest Equity Curve](./screenshots/backtest_after_onnx.png)
 

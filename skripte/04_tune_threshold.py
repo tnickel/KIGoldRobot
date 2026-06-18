@@ -120,8 +120,8 @@ def main():
     config = {
         "output_directory": reports_dir,
         "settings": {
-            "from_date": "2024-06-10",
-            "to_date": "2026-06-10",
+            "from_date": "2025-01-01",
+            "to_date": "2025-12-31",
             "deposit": 10000,
             "currency": "USD",
             "leverage": "1:100",

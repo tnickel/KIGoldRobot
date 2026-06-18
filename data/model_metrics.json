@@ -7,220 +7,220 @@
       "min_samples_leaf": 50,
       "class_weight": "balanced"
     },
-    "training_time_seconds": 0.6828267574310303
+    "training_time_seconds": 0.6441338062286377
   },
   "feature_importances": [
     {
       "name": "rsi_d1",
-      "importance": 0.08665394791411792
-    },
-    {
-      "name": "dist_sma200_h4",
-      "importance": 0.0699626785627349
+      "importance": 0.08082510621160871
     },
     {
       "name": "dist_ema250_h4",
-      "importance": 0.06418137619696108
+      "importance": 0.05865413955853573
     },
     {
-      "name": "dxy_close",
-      "importance": 0.04086829671178473
+      "name": "dist_sma200_h4",
+      "importance": 0.05038698514096609
     },
     {
       "name": "rsi_euraud_h1",
-      "importance": 0.04069367539691897
-    },
-    {
-      "name": "adx_h1",
-      "importance": 0.04008322867587837
-    },
-    {
-      "name": "ema50_ema200_dist_h1",
-      "importance": 0.038170218988271234
-    },
-    {
-      "name": "macd_hist_h1",
-      "importance": 0.03657879831567697
-    },
-    {
-      "name": "dist_bb_upper_h4",
-      "importance": 0.03560354258209248
-    },
-    {
-      "name": "dist_bb_lower_h4",
-      "importance": 0.03364778400092897
-    },
-    {
-      "name": "rsi_h4",
-      "importance": 0.03226632095443868
+      "importance": 0.046834820697156214
     },
     {
       "name": "macd_h1",
-      "importance": 0.031103395346102496
+      "importance": 0.0433049676776143
     },
     {
-      "name": "rsi_usdjpy_h1",
-      "importance": 0.026458466660806174
-    },
-    {
-      "name": "rsi_us500_h1",
-      "importance": 0.026387407272987547
-    },
-    {
-      "name": "vix_close",
-      "importance": 0.02567448895098791
-    },
-    {
-      "name": "atr_ratio_h1",
-      "importance": 0.02509647599424043
+      "name": "dxy_close",
+      "importance": 0.03848250689213748
     },
     {
       "name": "bb_width_h4",
-      "importance": 0.024835247028441042
+      "importance": 0.038429716535074016
     },
     {
-      "name": "macd_sig_h1",
-      "importance": 0.022488722651044853
+      "name": "macd_hist_h1",
+      "importance": 0.03679280387608801
+    },
+    {
+      "name": "ema50_ema200_dist_h1",
+      "importance": 0.03557523955019855
+    },
+    {
+      "name": "adx_h1",
+      "importance": 0.0347243896232616
+    },
+    {
+      "name": "dist_bb_lower_h4",
+      "importance": 0.03356033341325297
+    },
+    {
+      "name": "vix_close",
+      "importance": 0.03294362397098672
+    },
+    {
+      "name": "dist_bb_upper_h4",
+      "importance": 0.032343958447221384
+    },
+    {
+      "name": "rsi_usdjpy_h1",
+      "importance": 0.02998503294716782
     },
     {
       "name": "dist_sma200_h1",
-      "importance": 0.022464795083669158
+      "importance": 0.027121925872919516
     },
     {
-      "name": "rsi_dxy_h1",
-      "importance": 0.02167090536164681
+      "name": "rsi_h4",
+      "importance": 0.026265370532155427
+    },
+    {
+      "name": "macd_sig_h1",
+      "importance": 0.02527856886362981
     },
     {
       "name": "rsi_gbpaud_h1",
-      "importance": 0.020692953735029062
+      "importance": 0.023987328093392577
     },
     {
-      "name": "rsi_audjpy_h1",
-      "importance": 0.020081734698980374
+      "name": "rsi_us500_h1",
+      "importance": 0.022756326274354612
     },
     {
-      "name": "bb_width_h1",
-      "importance": 0.019798916927091473
+      "name": "atr_ratio_h1",
+      "importance": 0.022437953189504197
     },
     {
       "name": "rsi_h1",
-      "importance": 0.018184603688756844
+      "importance": 0.022262693641579658
+    },
+    {
+      "name": "rsi_dxy_h1",
+      "importance": 0.020254108093066575
     },
     {
       "name": "dist_bb_lower_h1",
-      "importance": 0.017348759911900283
-    },
-    {
-      "name": "rsi_xauusd_h1",
-      "importance": 0.016952493972321923
-    },
-    {
-      "name": "dist_env_down",
-      "importance": 0.01380812225585071
-    },
-    {
-      "name": "atr_ratio_m15",
-      "importance": 0.012825439555396655
-    },
-    {
-      "name": "cos_hour",
-      "importance": 0.011943189282199134
+      "importance": 0.01955998823022185
     },
     {
       "name": "dist_bb_upper_h1",
-      "importance": 0.011585592959053212
+      "importance": 0.018554170112826108
     },
     {
-      "name": "sin_day",
-      "importance": 0.011546062754687093
+      "name": "bb_width_h1",
+      "importance": 0.018419365818867613
+    },
+    {
+      "name": "rsi_audjpy_h1",
+      "importance": 0.017626086376662693
+    },
+    {
+      "name": "atr_ratio_m15",
+      "importance": 0.01682878739803838
+    },
+    {
+      "name": "dist_env_down",
+      "importance": 0.014112174581213126
+    },
+    {
+      "name": "rsi_xauusd_h1",
+      "importance": 0.013459494714802647
     },
     {
       "name": "cci_h1",
-      "importance": 0.010685661597952463
+      "importance": 0.01148832922862418
+    },
+    {
+      "name": "sin_day",
+      "importance": 0.011395276337233869
     },
     {
       "name": "efficiency_ratio_h1",
-      "importance": 0.009776879309495726
+      "importance": 0.010445726977367424
     },
     {
-      "name": "sin_hour",
-      "importance": 0.007962657111663602
-    },
-    {
-      "name": "dist_env_up",
-      "importance": 0.007817161488085778
+      "name": "cos_hour",
+      "importance": 0.009361401638318096
     },
     {
       "name": "rsi_m15",
-      "importance": 0.007509372864845418
+      "importance": 0.009065250046930555
+    },
+    {
+      "name": "dist_env_up",
+      "importance": 0.008919643708626331
+    },
+    {
+      "name": "sin_hour",
+      "importance": 0.008412390358534656
     },
     {
       "name": "cos_day",
-      "importance": 0.006542827903117158
+      "importance": 0.0066178031068243924
     },
     {
       "name": "minutes_to_usd_news",
-      "importance": 0.004903488271884169
+      "importance": 0.004639731383177098
     },
     {
       "name": "rsi_m5",
-      "importance": 0.004537993070900452
-    },
-    {
-      "name": "spread_points",
-      "importance": 0.004304171112661574
-    },
-    {
-      "name": "is_asian_session",
-      "importance": 0.0032941498866260327
+      "importance": 0.004029252118201741
     },
     {
       "name": "stoch_d_m15",
-      "importance": 0.0032777108066564587
+      "importance": 0.0035708224511008797
     },
     {
       "name": "stoch_k_m15",
-      "importance": 0.0030708760442272913
+      "importance": 0.0020891246769255785
+    },
+    {
+      "name": "spread_points",
+      "importance": 0.0020602948159582917
+    },
+    {
+      "name": "is_asian_session",
+      "importance": 0.0020401191850585323
     },
     {
       "name": "is_ny_session",
-      "importance": 0.002338815145260161
+      "importance": 0.001678401668442819
     },
     {
       "name": "minutes_to_aud_news",
-      "importance": 0.0018025947174635797
-    },
-    {
-      "name": "is_london_session",
-      "importance": 0.0011481524031049031
+      "importance": 0.0011176409204642127
     },
     {
       "name": "vol_ratio_m5",
-      "importance": 0.0010055359195600398
+      "importance": 0.00103531235390077
     },
     {
-      "name": "is_buy",
-      "importance": 0.0003476455691597799
+      "name": "is_london_session",
+      "importance": 0.00022508384426385108
     },
     {
       "name": "consec_bars_m5",
-      "importance": 1.6664386338093907e-05
+      "importance": 4.0428845542308905e-05
+    },
+    {
+      "name": "is_buy",
+      "importance": 0.0
     }
   ],
   "forest_details": {
     "n_estimators": 100,
     "max_depth_limit": 6,
-    "total_nodes": 8598,
-    "avg_nodes_per_tree": 85.98,
+    "total_nodes": 8600,
+    "avg_nodes_per_tree": 86.0,
     "max_actual_depth": 6,
     "avg_actual_depth": 6.0,
-    "onnx_size_bytes": 314717
+    "onnx_size_bytes": 314790
   },
   "dataset_size": {
     "total": 124095,
-    "train": 101446,
+    "train": 90409,
     "val": 0,
-    "test": 22649
+    "test": 33686
   },
   "feature_count": 49,
   "features": [
@@ -275,76 +275,76 @@
     "dist_bb_lower_h4"
   ],
   "accuracies": {
-    "train": 0.6223705222482897,
+    "train": 0.611045360528266,
     "val": 0.0,
-    "test": 0.4786524791381518
+    "test": 0.5122306002493617
   },
   "classification_reports": {
     "train": {
       "0": {
-        "precision": 0.2611821251735068,
-        "recall": 0.8264717451160352,
-        "f1-score": 0.39692709727185427,
-        "support": 15254.0
+        "precision": 0.25383115705476966,
+        "recall": 0.8326764334052205,
+        "f1-score": 0.3890616584721764,
+        "support": 13447.0
       },
       "1": {
-        "precision": 0.9502228407018072,
-        "recall": 0.5862493038797104,
-        "f1-score": 0.7251253865637265,
-        "support": 86192.0
+        "precision": 0.9514007387087716,
+        "recall": 0.5723214053688833,
+        "f1-score": 0.7147064311733828,
+        "support": 76962.0
       },
-      "accuracy": 0.6223705222482897,
+      "accuracy": 0.611045360528266,
       "macro avg": {
-        "precision": 0.6057024829376569,
-        "recall": 0.7063605244978728,
-        "f1-score": 0.5610262419177904,
-        "support": 101446.0
+        "precision": 0.6026159478817706,
+        "recall": 0.7024989193870519,
+        "f1-score": 0.5518840448227796,
+        "support": 90409.0
       },
       "weighted avg": {
-        "precision": 0.8466147430472057,
-        "recall": 0.6223705222482897,
-        "f1-score": 0.6757756171804268,
-        "support": 101446.0
+        "precision": 0.8476475928438537,
+        "recall": 0.611045360528266,
+        "f1-score": 0.6662715932865229,
+        "support": 90409.0
       }
     },
     "val": {},
     "test": {
       "0": {
-        "precision": 0.17520516293522428,
-        "recall": 0.6016415868673051,
-        "f1-score": 0.271380970011107,
-        "support": 3655.0
+        "precision": 0.18611572139872948,
+        "recall": 0.5953863053826437,
+        "f1-score": 0.28358404185742314,
+        "support": 5462.0
       },
       "1": {
-        "precision": 0.8558130322836205,
-        "recall": 0.454985784984732,
-        "f1-score": 0.5941152206792245,
-        "support": 18994.0
+        "precision": 0.8636896317769691,
+        "recall": 0.4961380385487528,
+        "f1-score": 0.6302405652946869,
+        "support": 28224.0
       },
-      "accuracy": 0.4786524791381518,
+      "accuracy": 0.5122306002493617,
       "macro avg": {
-        "precision": 0.5155090976094224,
-        "recall": 0.5283136859260186,
-        "f1-score": 0.4327480953451658,
-        "support": 22649.0
+        "precision": 0.5249026765878493,
+        "recall": 0.5457621719656982,
+        "f1-score": 0.456912303576055,
+        "support": 33686.0
       },
       "weighted avg": {
-        "precision": 0.7459794077320557,
-        "recall": 0.4786524791381518,
-        "f1-score": 0.542033729832301,
-        "support": 22649.0
+        "precision": 0.7538247413629708,
+        "recall": 0.5122306002493617,
+        "f1-score": 0.5740321127917379,
+        "support": 33686.0
       }
     }
   },
   "confusion_matrices": {
     "train": [
       [
-        12607,
-        2647
+        11197,
+        2250
       ],
       [
-        35662,
-        50530
+        32915,
+        44047
       ]
     ],
     "val": [
@@ -359,12 +359,12 @@
     ],
     "test": [
       [
-        2199,
-        1456
+        3252,
+        2210
       ],
       [
-        10352,
-        8642
+        14221,
+        14003
       ]
     ]
   }

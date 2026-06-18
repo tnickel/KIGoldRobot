@@ -123,7 +123,7 @@ def main():
     y = df[target_col]
     
     # Chronological Split
-    split_date = '2025-06-01'
+    split_date = '2025-01-01'
     X_train = X[X.index < split_date]
     y_train = y[y.index < split_date]
     X_test = X[X.index >= split_date]

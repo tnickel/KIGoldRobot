@@ -71,27 +71,27 @@ graph TD
 
 ---
 
-## 📈 Backtest Validation Highlights (AUDUSD M5, 2-Year Run)
+## 📈 Backtest Validation Highlights (AUDUSD M5, OOS 2026 Run)
 
-A two-year comparative backtest (June 2024 – June 2026) demonstrates the impact of using the ONNX Gatekeeper:
+A comparative out-of-sample backtest (January 2026 – June 2026) demonstrates the impact of using the ONNX Gatekeeper:
 
 | Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Min Prob = 0.58) | Change |
 | :--- | :---: | :---: | :---: |
-| **Net Profit ($)** | $163191.88 | $14744.40 | -91.0% |
-| **Total Trades** | 549 | 96 | -82.5% |
-| **Max Drawdown (%)** | 35.90% | **9.78%** | **-72.8%** |
-| **Profit Factor** | 1.89 | **46.59** | **+2365.1%** |
+| **Net Profit ($)** | $18987.05 | $3419.82 | -82.0% |
+| **Total Trades** | 145 | 30 | -79.3% |
+| **Max Drawdown (%)** | 35.92% | **9.79%** | **-72.7%** |
+| **Profit Factor** | 2.35 | **45.54** | **+1837.9%** |
 | **Recovery Factor** | 0.00 | 0.00 | N/A |
 
 ### Visualizing the Gatekeeper Impact (Before vs After)
 
 #### Baseline Strategy (No ONNX Gatekeeper)
-*The baseline grid EA enters all envelope breakouts blindly, suffering a **35.90% maximum drawdown** due to runaway trend runs:*
+*The baseline grid EA enters all envelope breakouts blindly, suffering a **35.92% maximum drawdown** due to runaway trend runs:*
 
 ![Baseline Backtest Equity Curve](./doc/screenshots/backtest_before_no_onnx.png)
 
 #### Optimized Strategy (ONNX Gatekeeper Enabled)
-*The ONNX Gatekeeper filters out high-risk breakouts. Drawdown is slashed by **72.8%** down to just **9.78%**, and the Profit Factor jumps to **46.59**:*
+*The ONNX Gatekeeper filters out high-risk breakouts. Drawdown is slashed by **72.7%** down to just **9.79%**, and the Profit Factor jumps to **45.54**:*
 
 ![ONNX Gatekeeper Backtest Equity Curve](./doc/screenshots/backtest_after_onnx.png)
 
