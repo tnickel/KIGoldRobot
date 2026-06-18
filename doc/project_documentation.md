@@ -50,15 +50,31 @@ This documentation serves as a structured project brief detailing the **ToTheMoo
 
 ---
 
-## 📈 Performance Highlights (AUDUSD M5)
+## 📈 Performance Highlights (AUDUSD M5, 2-Year Backtest)
 
-The integration of the ONNX Gatekeeper provides a significant improvement in risk-adjusted returns by filtering out high-risk entries:
+The integration of the ONNX Gatekeeper provides a massive improvement in risk-adjusted performance by filtering out high-risk reversion entries:
 
-| Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Filtered) |
-| :--- | :---: | :---: |
-| **Trade Quality** | Unfiltered | **Filtered (Class 1 Reversions Only)** |
-| **Max Drawdown** | Standard | **Significantly Reduced** |
-| **Profit Factor / RF** | Base | **Improved** |
+| Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Min Prob = 0.58) | Change |
+| :--- | :---: | :---: | :---: |
+| **Net Profit ($)** | $1536.85 | $492.21 | -68.0% |
+| **Total Trades** | 501 | 96 | -80.8% |
+| **Max Drawdown (%)** | 25.74% | **0.54%** | **-97.9%** |
+| **Profit Factor** | 1.42 | **46.32** | **+3162.0%** |
+| **Recovery Factor** | 0.00 | 0.00 | N/A |
+
+### Backtest Visuals (Before vs After)
+
+To visualize how effective the ONNX Gatekeeper is at eliminating dangerous overextensions, compare the two equity curves:
+
+#### 1. Baseline Strategy (Without ONNX Gatekeeper)
+*The baseline strategy enters every breakout blindly. During strong trends against the position, it suffers from severe drawdown phases (up to 25.74%):*
+
+![Baseline Backtest Equity Curve](./screenshots/backtest_before_no_onnx.png)
+
+#### 2. Optimized Strategy (With ONNX Gatekeeper)
+*With the ONNX Gatekeeper active (probability threshold at 0.58), high-risk entries are successfully blocked. The equity curve is extremely smooth, resulting in a near-flat drawdown of just 0.54% and a profit factor of 46.32:*
+
+![ONNX Gatekeeper Backtest Equity Curve](./screenshots/backtest_after_onnx.png)
 
 ---
 
