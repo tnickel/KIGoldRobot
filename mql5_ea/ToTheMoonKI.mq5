@@ -33,9 +33,9 @@ input int      Inp_Dashboard_Font_Size = 11;    // Dashboard Font Size
 input int      Inp_Envelope_Width = 2;          // Envelope Line Width
 
 input group "---- MONEY MANAGE ----"
-input double   Inp_Initial_Lot = 0.01;          // Base Lot Size
-input double   Inp_Min_Lot = 0.01;              // Minimum Lot Size
-input double   Inp_Max_Lot = 0.1;               // Maximum Lot Size
+input double   Inp_Initial_Lot = 0.19;          // Base Lot Size
+input double   Inp_Min_Lot = 0.19;              // Minimum Lot Size
+input double   Inp_Max_Lot = 1.90;              // Maximum Lot Size
 input double   Inp_Preset_Factor = 1200.0;      // Balance Divider for Lot Scaling
 
 input group "---- GRID MODE ----"

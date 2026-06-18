@@ -77,21 +77,21 @@ A two-year comparative backtest (June 2024 – June 2026) demonstrates the impac
 
 | Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Min Prob = 0.58) | Change |
 | :--- | :---: | :---: | :---: |
-| **Net Profit ($)** | $1536.85 | $492.21 | -68.0% |
-| **Total Trades** | 501 | 96 | -80.8% |
-| **Max Drawdown (%)** | 25.74% | **0.54%** | **-97.9%** |
-| **Profit Factor** | 1.42 | **46.32** | **+3162.0%** |
+| **Net Profit ($)** | $163191.88 | $14744.40 | -91.0% |
+| **Total Trades** | 549 | 96 | -82.5% |
+| **Max Drawdown (%)** | 35.90% | **9.78%** | **-72.8%** |
+| **Profit Factor** | 1.89 | **46.59** | **+2365.1%** |
 | **Recovery Factor** | 0.00 | 0.00 | N/A |
 
 ### Visualizing the Gatekeeper Impact (Before vs After)
 
 #### Baseline Strategy (No ONNX Gatekeeper)
-*The baseline grid EA enters all envelope breakouts blindly, suffering a **25.74% maximum drawdown** due to runaway trend runs:*
+*The baseline grid EA enters all envelope breakouts blindly, suffering a **35.90% maximum drawdown** due to runaway trend runs:*
 
 ![Baseline Backtest Equity Curve](./doc/screenshots/backtest_before_no_onnx.png)
 
 #### Optimized Strategy (ONNX Gatekeeper Enabled)
-*The ONNX Gatekeeper filters out high-risk breakouts. Drawdown is slashed by **97.9%** down to just **0.54%**, and the Profit Factor jumps to **46.32**:*
+*The ONNX Gatekeeper filters out high-risk breakouts. Drawdown is slashed by **72.8%** down to just **9.78%**, and the Profit Factor jumps to **46.59**:*
 
 ![ONNX Gatekeeper Backtest Equity Curve](./doc/screenshots/backtest_after_onnx.png)
 

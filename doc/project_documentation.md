@@ -72,10 +72,10 @@ The integration of the ONNX Gatekeeper provides a massive improvement in risk-ad
 
 | Metric | Base Strategy (No ONNX) | ONNX Gatekeeper (Min Prob = 0.58) | Change |
 | :--- | :---: | :---: | :---: |
-| **Net Profit ($)** | $1536.85 | $492.21 | -68.0% |
-| **Total Trades** | 501 | 96 | -80.8% |
-| **Max Drawdown (%)** | 25.74% | **0.54%** | **-97.9%** |
-| **Profit Factor** | 1.42 | **46.32** | **+3162.0%** |
+| **Net Profit ($)** | $163191.88 | $14744.40 | -91.0% |
+| **Total Trades** | 549 | 96 | -82.5% |
+| **Max Drawdown (%)** | 35.90% | **9.78%** | **-72.8%** |
+| **Profit Factor** | 1.89 | **46.59** | **+2365.1%** |
 | **Recovery Factor** | 0.00 | 0.00 | N/A |
 
 ### Backtest Visuals (Before vs After)
@@ -83,12 +83,12 @@ The integration of the ONNX Gatekeeper provides a massive improvement in risk-ad
 To visualize how effective the ONNX Gatekeeper is at eliminating dangerous overextensions, compare the two equity curves:
 
 #### 1. Baseline Strategy (Without ONNX Gatekeeper)
-*The baseline strategy enters every breakout blindly. During strong trends against the position, it suffers from severe drawdown phases (up to 25.74%):*
+*The baseline strategy enters every breakout blindly. During strong trends against the position, it suffers from severe drawdown phases (up to 35.90%):*
 
 ![Baseline Backtest Equity Curve](./screenshots/backtest_before_no_onnx.png)
 
 #### 2. Optimized Strategy (With ONNX Gatekeeper)
-*With the ONNX Gatekeeper active (probability threshold at 0.58), high-risk entries are successfully blocked. The equity curve is extremely smooth, resulting in a near-flat drawdown of just 0.54% and a profit factor of 46.32:*
+*With the ONNX Gatekeeper active (probability threshold at 0.58), high-risk entries are successfully blocked. The equity curve is extremely smooth, resulting in a controlled drawdown of just 9.78% and a profit factor of 46.59:*
 
 ![ONNX Gatekeeper Backtest Equity Curve](./screenshots/backtest_after_onnx.png)
 
