@@ -170,7 +170,7 @@ def main():
             "leverage": "1:100",
             "model": 1,
             "use_virtual_desktop": False,
-            "auto_kill_mt5": False
+            "auto_kill_mt5": True
         },
         "runs": [
             {
