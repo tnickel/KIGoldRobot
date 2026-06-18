@@ -48,6 +48,22 @@ This documentation serves as a structured project brief detailing the **ToTheMoo
 *   **Sandbox Inference:** The EA calculates the 23-feature vector on every new M5 bar and calls the local ONNX session. If the Class 1 probability exceeds the threshold parameter (e.g. `0.65`), the trade is approved. Otherwise, it is blocked.
 *   **ZipMap Pruning:** Disabling ZipMap allows exporting output probabilities as a clean float matrix `[BatchSize, 2]` which is fully compatible with MT5's matrix structures.
 
+### Phase 5: Graphical Cockpit Dashboard (`skripte/09_audusd_pipeline_gui.py`)
+*   **GUI Cockpit**: Modern Tkinter application launched via `start_graphical_learner.bat`.
+*   **Visuals**: Displays training/testing accuracies, ranks the 49 features by Gini importance, and plots an interactive confusion matrix heatmap.
+*   **Live Retraining**: Asynchronously triggers model training with a scrolling console log.
+
+#### Dashboard Interface (Metrics & Accuracy)
+*Renders real-time model statistics, training progress, classification reports for Class 1 (Safe trades) and Class 0 (Dangerous/blocked trades), and forest details:*
+
+![Modell-Metriken Dashboard](./screenshots/gui_metrics_dashboard.png)
+
+#### Feature Importance Ranking
+*Displays Gini importances of all 49 active features, indicating that momentum (rsi_d1) and structural distances (dist_sma200_h4, dist_ema250_h4) carry the highest predictive weight:*
+
+![Feature Importance Ranking](./screenshots/gui_feature_importance.png)
+
+
 ---
 
 ## 📈 Performance Highlights (AUDUSD M5, 2-Year Backtest)
